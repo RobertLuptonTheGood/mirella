@@ -6,5 +6,6 @@ mirel[ei1-3]c.c
 primit.c
 mirexpr.oo
 mirel*.bak
+.mirhist
 *.o
 libmirella.a

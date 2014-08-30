@@ -245,21 +245,22 @@ void init_mgs()  /* initializes memory graphics system; there is code in
     
     if((fdes = openblk(mcfname("mfont.dat"),O_RDONLY)) == -1){
         scrprintf("\nCannot open font file in Mirella directory");
-    }
-    nrd = readblk(fdes,(char *)nstroke,FONTSIZE);
-    if(nrd < FONTSIZE) scrprintf("\nError reading font file, req=%d, read=%d",
-        FONTSIZE,nrd);
+    } else {
+       nrd = readblk(fdes,(char *)nstroke,FONTSIZE);
+       if(nrd < FONTSIZE) scrprintf("\nError reading font file, req=%d, read=%d",
+				    FONTSIZE,nrd);
 #ifdef IBMORDER
 #ifdef DSI68
-    for(i=0;i<512;i++) pointer[i] = swab(pointer[i]);
+       for(i=0;i<512;i++) pointer[i] = swab(pointer[i]);
 #else
-    /* WARNING!!!! this works in bky unix on the sun, but may not on all
-    systems; it does not under IBMPC Turbo C, for example */
-    swab((char *)pointer,(char *)pointer,1024);
+       /* WARNING!!!! this works in bky unix on the sun, but may not on all
+	  systems; it does not under IBMPC Turbo C, for example */
+       swab((char *)pointer,(char *)pointer,1024);
 #endif
 /*debug printf("\nfont base, origin of ptr array = %d %d",nstroke,pointer);*/
 #endif
-    closeblk(fdes);
+       closeblk(fdes);
+    }
     gd_init();    /* initialize the display device, if any */
 }
 

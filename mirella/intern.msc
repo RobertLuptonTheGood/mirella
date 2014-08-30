@@ -4,6 +4,7 @@ k
 #include <minstall.def>
 #define C_M 149
 \
+#if 0		/* all in <math.h> */
 {
 	/* C code for mirelic.c */
 	double erf();
@@ -16,9 +17,10 @@ k
         double asinh();
         double acosh();
         double atanh();
+        double lgamma();
         double tgamma();
-        double gamma();
 }
+#endif
 \ Create the root vocabulary so that we can reference it from C
 V	root
 F
@@ -56,7 +58,7 @@ f       y0              y0                      f @ f
 f       y1              y1                      f @ f
 f       yn              yn                      i f @ f
 f       gamma           tgamma                  f @ f
-f       loggamma        gamma                   f @ f
+f       loggamma        lgamma                  f @ f
 f       floor           floor                   f @ f
 f       ceil            ceil                    f @ f
 \ from mirmathf.c

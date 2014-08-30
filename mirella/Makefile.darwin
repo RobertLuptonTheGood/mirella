@@ -1,0 +1,5 @@
+#
+# Make variables (e.g. paths) to build on os/x 10.9
+#
+X11_LIB_DIR = /usr/X11R6/lib
+X11_INCLUDE_DIR = /usr/X11/include

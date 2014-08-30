@@ -1857,11 +1857,13 @@ error("\n  or wait for the code to handle the interrupt gracefully (n) ?"  );
     case SIGFPE:
         errcp = ("\nArithmetic exception");
         break;
+#if defined(SIGWINCH)
     case SIGWINCH:
         errcp = (screensize()); 
         reset_scr();
         insane = 0;
         break;
+#endif
     }
     /* get 4 interrupts per word; see out_intp(); if early, leave */
     if ( (insane++)/4 || m_errexit ) {

@@ -79,8 +79,10 @@
 #     define UNIX
 /* #     define SYS_V */
 #     define SIGNALS
+#if 0
 #     define BKTAPE
 #     define BKSCSITAPE
+#endif
 #     if !defined(_POSIX_SOURCE)
 #          define _POSIX_SOURCE
 #     endif

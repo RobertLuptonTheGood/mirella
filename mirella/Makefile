@@ -1,10 +1,15 @@
+#
+# Mirella's Makefile.
+#
+# Allow platform-specific values
+# 
+ifeq ($(shell uname), Darwin)
+   include Makefile.darwin
+else ifeq ($(shell uname), Linux)
+   include Makefile.linux
+endif
+
 A = .a
-#
-# This is the skeleton main makefile for building Mirella, hacked for Linux
-#
-# After running set-opts it should work
-# under both dos and unix; under dos if you define ZORTECH it'll
-# use the ztc compiler, otherwise the pharlap.
 #
 DMAKE = 1
 LINUX = 1
@@ -13,13 +18,16 @@ MIRELSRC = .
 RANLIB = /usr/bin/ranlib
 SHELL = /bin/sh
 #
+X11_INCLUDE_DIR ?= /usr/include
+X11_LIB_DIR ?= /usr/lib
+
 LIBMIRELLA = libmirella$A
 LIBSM = -L/u/rhl/sm/src -lplotsub -ldevices -lutils $(LIBX11)
-LIBX11 =  -L/usr/X11R6/lib -lX11 
+LIBX11 =  -L$(X11_LIB_DIR) -lX11 
 #
 # Used by make install
 #
-DESTDIR = /home/jeg/mirella
+DESTDIR ?= /home/jeg/mirella
 BINDIR = $(DESTDIR)bin
 ETCDIR = $(DESTDIR)etc
 LIBDIR = $(DESTDIR)lib
@@ -32,7 +40,7 @@ DICTFILE = mirella.dic
 OPT ?= -O2
 CC = gcc -Wall -Wno-uninitialized -Wno-unused-result -fno-strict-aliasing $(OPT)
 CFLAGS = -DDOT_MIRELLA=\\".mirella\\"
-CFLAGS += -I/usr/X11/include
+CFLAGS += -I$(X11_INCLUDE_DIR)
 LDFLAGS =  -L$(MIRELSRC) -lmirella $(LIBX11) -lm
 MINSTALL = ./minstall
 #CFLAGS += -I/usr/openwin/include

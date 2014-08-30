@@ -149,8 +149,8 @@ char *getwd P_ARGS(( char *name ));
    int ioctl P_ARGS(( int, int, char * ));
 #endif
 char *mktemp P_ARGS(( char * ));
-#if !defined(LINUX)
-   Void *sbrk P_ARGS(( unsigned int ));
+#if !defined(LINUX) || (defined(__DARWIN_C_LEVEL) && __DARWIN_C_LEVEL < 199506L)
+   Void *sbrk P_ARGS(( int ));
 #endif
 #if defined(SOLARIS)
 #  include <sys/select.h>

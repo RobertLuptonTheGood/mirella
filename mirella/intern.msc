@@ -278,8 +278,8 @@ v	vms_bblk	vms_bblk		i
 f	creatvms	creatvms		p i i
 #endif
 \ files--from mirelf.c  & the C library
-f	unlink		unlink			s * i
-f	_rename		rename			s s * i
+f	unlink		unlink			s @ i
+f	_rename		rename			s s @ i
 p	seek		_mseek
 p	tell		_mtell
 v	achan		achan			i   

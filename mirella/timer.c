@@ -117,8 +117,8 @@ print_timers(void)
    TIMER *ptr;
 
    for(ptr = head;ptr != NULL;ptr = ptr->next) {
-      printf("\n%2d %-7d %-7d %s",
-	     ptr->id,ptr->duration,ptr->expires - ntimer(mtimer),ptr->word);
+      printf("\n%2d %-7d %-7ld %s",
+	     ptr->id, ptr->duration, (long)(ptr->expires - ntimer(mtimer)), ptr->word);
    }
 }
 

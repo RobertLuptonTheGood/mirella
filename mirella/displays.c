@@ -102,7 +102,7 @@ pushwind()
  */
 int
 buf_to_image(x,y)
-int *x,*y;
+normal *x,*y;
 {
    if((c_disp = findwind(*x,*y)) == NULL) {
       return(-1);
@@ -124,7 +124,7 @@ int *x,*y;
  */
 int
 get_value(x,y,val)
-int *x,*y;				/* position in buffer coords */
+normal *x,*y;				/* position in buffer coords */
 short *val;
 {
    int buf;
@@ -151,10 +151,10 @@ short *val;
  */
 int
 image_to_buf(xx,yy)
-int *xx,*yy;
+normal *xx,*yy;
 {
-   int x = *xx,
-       y = *yy;
+   normal x = *xx,
+          y = *yy;
    
    if(c_disp == NULL) {
       return(-1);
@@ -216,7 +216,7 @@ int c;					/* m, M, z, or Z */
    int i,j;
    int size;				/* size of region to search */
    short val;				/* value of a pixel */
-   int xx,yy;				/* position in image coords. */
+   normal xx,yy;			/* position in image coords. */
    int xmin,xmax;			/* edges of region */
    int ymin,ymax;
 
@@ -463,7 +463,7 @@ int wid,hgt;
  */
 
 
-mirella int
+mirella normal
 dspprint(str)
 char *str;
 {
@@ -644,7 +644,7 @@ int wid,hgt;
 /*********************** DSPPRINT() *************************************/
 /* a (*scrnprt)() function for writing text to the screen in a window */
 
-mirella int
+mirella normal
 dspprint(str)       /* prints the string on the display at pxcur,pycur */
 char *str;
 {

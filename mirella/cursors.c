@@ -15,7 +15,7 @@ extern int interrupt;			/* have we seen ^C? */
  * the routine just returns it; this is handy sometimes to make the
  * routine ignore input.
  */
-int cursor_key;
+normal cursor_key;
 
 int
 do_cursor_key()

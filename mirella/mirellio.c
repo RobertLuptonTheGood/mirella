@@ -1355,7 +1355,7 @@ normal args;
 
 static int
 gexpect(addr,count,flg)			/* count must include terminating nul*/
-u_char *addr;
+char *addr;
 normal count;
 normal flg;				/* mode flag; see above */
 {
@@ -1691,7 +1691,7 @@ load_push(fname)
 char *fname;  /* forth string */
 {
     char bname[68];
-    int scr;
+    normal scr;
     normal *scr2;
     
     tls++;

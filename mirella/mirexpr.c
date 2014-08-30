@@ -365,7 +365,7 @@ static int
 print_error()
 {
    fprintf(stderr,"Syntax error:\n");
-   fprintf(stderr,"%s%*s^\n",str,sptr - str,"");
+   fprintf(stderr,"%s%*s^\n",str, (int)(sptr - str),"");
    next_token();
    return(0);
 }

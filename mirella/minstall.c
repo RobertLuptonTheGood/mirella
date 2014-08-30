@@ -1621,7 +1621,7 @@ char *size;				/* expr giving size of entity */
 
    if(size == NULL) size = "0";
    sprintf(buf,"   { \"\\%03o%s\", %d, %d, %d, %d, %s },\n",
-	   strlen(name),name,type,flag,d1,d2,size);
+	   (int)strlen(name),name,type,flag,d1,d2,size);
    addbuf(6,buf);
 }
 

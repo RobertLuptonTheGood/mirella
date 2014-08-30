@@ -490,8 +490,8 @@ struct ftab_t *ftptr;
          
     
     if(datoff != sizeof(struct ftab_t)) {
-       printf("\nDOTABFUN: Invalid ftab structure; dataoff=%d, size=%d",
-	      datoff, sizeof(struct ftab_t));
+       printf("\nDOTABFUN: Invalid ftab structure; dataoff=%d, size=%ld",
+	      datoff, (long)sizeof(struct ftab_t));
        erret((char *)NULL);
     }
     /* if data are off end but endpoints are zero, just return 0 and do

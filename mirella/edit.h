@@ -95,7 +95,7 @@ extern FTERMINAL m_fterm;
 extern FTERMINAL *mftarray[];
 extern int m_nfterm;
 
-extern int dosansiflg;
+extern normal dosansiflg;
 
 extern TERMINAL m_term;
 /*

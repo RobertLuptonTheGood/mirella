@@ -26,11 +26,13 @@ LIBDIR = $(DESTDIR)lib
 DICTFILE = mirella.dic 
 #
 #ZORTECH = 1
-# CC = gcc -Wall -Wno-uninitialized -fwritable-strings -m32
-# CC = gcc -Wall -Wno-uninitialized -m32 
+# CC = gcc -Wall -Wno-uninitialized -fwritable-strings
+# CC = gcc -Wall -Wno-uninitialized
 # try optimization
-CC = gcc -Wall -Wno-uninitialized -Wno-unused-result -m32 -O2 -fno-strict-aliasing
+OPT ?= -O2
+CC = gcc -Wall -Wno-uninitialized -Wno-unused-result -fno-strict-aliasing $(OPT)
 CFLAGS = -DDOT_MIRELLA=\\".mirella\\"
+CFLAGS += -I/usr/X11/include
 LDFLAGS =  -L$(MIRELSRC) -lmirella $(LIBX11) -lm
 MINSTALL = ./minstall
 #CFLAGS += -I/usr/openwin/include
@@ -38,7 +40,7 @@ MINSTALL = ./minstall
 #
  : $(LIBMIRELLA) fonts.bin
 #
-CFLAGS = -DDOT_MIRELLA=\\".mirella\\" -g
+CFLAGS += -g
 #
 OBJS =  mirelic.o mirelec.o mirel1c.o mirel2c.o mirel3c.o \
 	cmain.o dynamic.o mirelmem.o \

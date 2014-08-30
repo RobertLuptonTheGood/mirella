@@ -38,7 +38,7 @@ float **p;
 int ndim;
 double ftol;
 double (*funk)();
-int *piter;
+normal *piter;
 {
     int mpts,j,inhi,ilo,ihi,i;
     float yprr,ypr,rtol,*pr,*prr,*pbar,ybar;

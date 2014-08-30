@@ -13,9 +13,9 @@ normal m_fontindex = -1;
 
 u_char **m_ctab = 0;			/* this allows Mirella access and, in
 					   principle, font changes */
-int m_chgt = 0 ;			/* height of chars in m_ctab */
-int m_cwid = 0 ;			/* width of chars */
-int m_ctsz = 0 ;			/* M_NCHAR*m_chgt */
+normal m_chgt = 0 ;			/* height of chars in m_ctab */
+normal m_cwid = 0 ;			/* width of chars */
+normal m_ctsz = 0 ;			/* M_NCHAR*m_chgt */
 u_char *m_cmask;			/* dot mask */
 
 /********** FONT 0: HESTER'S 8x12 CHARACTER GENERATOR TABLE ***************/

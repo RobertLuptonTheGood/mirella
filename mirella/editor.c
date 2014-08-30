@@ -406,10 +406,10 @@ int nl;				/* number of lines */
 char *
 screensize()
 {
-    char lines[32];
-    char columns[32];
     static char sstring[32];
 #if defined(TIOCGWINSZ) && !defined(_IBMR2)
+    char lines[32];
+    char columns[32];
     static int fildes = -1;
     struct winsize twinsiz;
 

@@ -365,8 +365,8 @@ char *datestr()
     gettimeofday(&times,NULL);
     clock = times.tv_sec ;
     m_ltime = *((struct mir_tm *)gmtime(&clock));
-    sprintf(datestr,"%02d%02d%02d",m_ltime.tm_year%100,m_ltime.tm_mon + 1,
-        m_ltime.tm_mday);
+    sprintf(datestr,"%02ld%02ld%02ld", (long)m_ltime.tm_year%100, (long)m_ltime.tm_mon + 1,
+	    (long)m_ltime.tm_mday);
     return datestr;
 }
 

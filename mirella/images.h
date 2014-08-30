@@ -116,9 +116,9 @@ void bsbumpn P_ARGS(( int ));
 void copy_full_header P_ARGS(( HEADER *, HEADER * ));
 int do_cursor_key P_ARGS (( void ));
 void dsup P_ARGS(( void ));
-DISPLAY *findwind P_ARGS(( int x, int y ));
+DISPLAY *findwind P_ARGS(( normal x, normal y ));
 void free_app_pbuf P_ARGS(( PBUF * ));
-int get_value P_ARGS (( int *x, int *y, short *value ));
+int get_value P_ARGS (( normal *x, normal *y, short *value ));
 void headup P_ARGS(( void ));
 void init_app_header P_ARGS(( void ));
 void init_app_pbuf P_ARGS(( PBUF * ));
@@ -128,7 +128,7 @@ void init_display P_ARGS(( void ));
 void init_image P_ARGS(( void ));
 void init_header P_ARGS(( HEADER * ));
 void init_pbuf P_ARGS(( PBUF * ));
-int  isacbuf P_ARGS(( int d ));
+normal isacbuf P_ARGS(( int d ));
 void isokbuf P_ARGS(( int d ));
 void pclear P_ARGS(( void ));
 void qq P_ARGS(( void ));
@@ -162,11 +162,11 @@ void ccur P_ARGS(( void ));
 void cenwin P_ARGS(( int, int ));
 void dcenter P_ARGS(( int, int ));
 void dsp_erase P_ARGS(( void ));
-int dspinit P_ARGS(( void ));
-int dsp_image P_ARGS((short **pict, int xl, int yl, int xh, int yh ));
-int dsp_bimage P_ARGS((char **pict, int xl, int yl, int xh, int yh ));
-int dspprint P_ARGS(( char * ));
-int dsp_zoom P_ARGS(( int x, int y, int zoom ));
+normal dspinit P_ARGS(( void ));
+normal dsp_image P_ARGS((short **pict, int xl, int yl, int xh, int yh ));
+normal dsp_bimage P_ARGS((char **pict, int xl, int yl, int xh, int yh ));
+normal dspprint P_ARGS(( char * ));
+normal dsp_zoom P_ARGS(( int x, int y, int zoom ));
 void reset_curflags P_ARGS(( void ));
 void savepix P_ARGS(( int, int ));
 
@@ -285,7 +285,7 @@ extern u_char *dltable;			/* Mirella's dlt */
 #define c_ys curs->_ys
 #define c_marker curs->_cmarker
 #define c_val curs->_cval
-extern int cursor_key;
+extern normal cursor_key;
 
 /*****************************************************************************/
 /*

@@ -72,8 +72,8 @@ char **av;
 	 *eptr++ = *ptr++;
       }
       *eptr = '\0';
-      fprintf(outfil,"   { \"\\%03o%s\", %d, 0, 0, 0, 0 },\n",
-	      ptr - word,eword,type);
+      fprintf(outfil,"   { \"\\%03lo%s\", %d, 0, 0, 0, 0 },\n",
+	      (long)(ptr - word), eword, type);
    }
    fclose(infil);
 /*

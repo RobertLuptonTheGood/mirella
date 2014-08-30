@@ -1140,7 +1140,6 @@ timers which deliver interrupts or for interrupt code. */
 static unsigned normal t_start;
 static unsigned oritimer[NTIMER];   /* can have up to 32 separate timers */
 static int tpointer = 0;
-unsigned normal gtime();
 
 #define TLIM 0x3fffffff  /* maximum 2^n-1 for reliable timer reading. 3
                             instead of 7 because some systems do not have

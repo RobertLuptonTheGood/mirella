@@ -7,7 +7,7 @@
 #define OPENWINDOWS_BUG 1
 
 void x11close P_ARGS(( void ));
-int x11cursor P_ARGS(( int *, int *, int ));
+int x11cursor P_ARGS(( normal *, normal *, int ));
 void x11erase P_ARGS(( void ));
 void x11erase_graph P_ARGS(( void ));
 void x11flush P_ARGS(( void ));
@@ -1324,7 +1324,7 @@ mirella int curs_alt = 2;
 
 int
 x11cursor(x,y,one_key)
-int *x,*y;				/* cursor position */
+normal *x,*y;				/* cursor position */
 int one_key;				/* return on first key seen? */
 {
 #if BLINKTIME
@@ -1339,7 +1339,7 @@ int one_key;				/* return on first key seen? */
    Window child_wind;			/* not used */
    int c_xs_old,c_ys_old;		/* cx,cy before do_cursor_key() */
    int c_xi = 0, c_yi = 0;              /* cx,cy at beginning of loopy loop */
-   static int cx = -1,cy;		/* last position of cursor in wind */
+   static normal cx = -1,cy;		/* last position of cursor in wind */
    XEvent event;
    int value_flag;			/* cursor is in an image */
    int kx,ky;				/* cursor position in keyboard wind */
@@ -1565,11 +1565,11 @@ int one_key;				/* return on first key seen? */
 	    char string[20];
 	    
 	    if(value_flag == 0) {
-	       sprintf(string," %-4d %-4d %-5d  ",*x,*y,c_val);
+	       sprintf(string," %-4d %-4d %-5d  ", (int)*x, (int)*y, (int)c_val);
 	    } else if(value_flag == 1) {
-	       sprintf(string," %-4d %-4d %-5d* ",*x,*y,c_val);
+	       sprintf(string," %-4d %-4d %-5d* ", (int)*x, (int)*y, (int)c_val);
 	    } else {
-	       sprintf(string," %-4d %-4d %-5s  ",*x,*y,"");
+	       sprintf(string," %-4d %-4d %-5s  ", (int)*x, (int)*y, "");
 	    }
 	    XDrawImageString(disp,curswind,gc,0,(int)(0.8*h_font),string,
 			     sizeof(string));
@@ -1829,8 +1829,8 @@ int x1,y1,				/* draw from here */
  */
 void
 x11_templine(x1,y1,x2,y2)
-int x1,y1,				/* draw from here */
-    x2,y2;				/* to here */
+normal x1,y1,				/* draw from here */
+       x2,y2;				/* to here */
 {
    XSegment xvec;
    int xorig,yorig;			/* origin of current display */
@@ -2403,7 +2403,7 @@ int x,y,				/* position to zoom about */
    return(0);
 }
 
-int
+normal
 dsp_zoom(x,y,zoom)
 int x,y,				/* position to zoom about */
     zoom;				/* desired zoom */
@@ -2829,7 +2829,7 @@ static u_char *vlt = vlta;		/* current lookup table */
 /*
  * Initialise the window system, but don't open any windows.
  */
-int
+normal
 dspinit()
 {
    push_callback(x11redraw);
@@ -2879,7 +2879,7 @@ dspg2open()
 
 
 
-int
+normal
 dsp_image(pict,xl,yl,xh,yh)
 short **pict;				/* image to display */
 int xl,yl;				/* lower left corner in picture */
@@ -3042,7 +3042,7 @@ int n;
  */
  
 
-int
+normal
 dsp_bimage(pict,xl,yl,xh,yh)
 char **pict;				/* image to display */
 int xl,yl;				/* lower left corner in picture */

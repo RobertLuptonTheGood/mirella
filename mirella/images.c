@@ -531,7 +531,7 @@ int d;
  * checks for legality AND existence of pointer array (active); returns
  * 0 if not OK, 1 if OK
  */
-int
+normal
 isacbuf(d)
 int d;
 {

@@ -157,7 +157,7 @@ char *mktemp P_ARGS(( char * ));
 #else
    int select();
 #endif
-void swab P_ARGS (( char *from, char *to, int unsigned ));
+void swab P_ARGS (( const void *from, void *to, ssize_t));
 
 #ifdef DEF_FILE
 #  undef FILE

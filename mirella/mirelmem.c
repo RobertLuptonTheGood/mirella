@@ -313,8 +313,8 @@ void init_mem() /* attempts to reopen any channels open in dictionary image */
                 continue;
             }
                 /* do not reopen graphs */
-            sprintf(out_string,"\nAttempting to allocate %6d bytes as %s ",
-            mp->mlength,mp->mname);
+            sprintf(out_string,"\nAttempting to allocate %6ld bytes as %s ",
+		    (long)mp->mlength,mp->mname);
             cprint(out_string);
             ret = (char *)malloc(mp->mlength);
             mp->mpointer = ret;
@@ -727,8 +727,8 @@ void showalloc()
         mp = memorig+i;
         if(mp->mname[0] != '\0'){
             fprintf(stderr,
-                "\n%3d %11u %11u %11u %4d %4d %4d %4d  %-15s", 
-                i,(int)&mp->mpointer,(int)mp->mpointer,mp->mlength,mp->melsize,
+                "\n%3d %11lu %11lu %11lu %4d %4d %4d %4d  %-15s", 
+		    i,(long)&mp->mpointer,(long)mp->mpointer,(long)mp->mlength,mp->melsize,
                 mp->msiz1, mp->msiz2, mp->msiz3, mp->mname);
             found++;
         }
@@ -745,7 +745,7 @@ normal nbytes;
 {
     char * ret;
     if((ret = (char *)malloc(nbytes)) == NULL) {
-        printf("\nCannot allocate %d bytes",nbytes);
+       printf("\nCannot allocate %ld bytes", (long)nbytes);
         erret((char *)NULL);
     }
     return ret;

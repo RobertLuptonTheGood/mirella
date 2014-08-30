@@ -292,7 +292,7 @@ void plotbox(xl,yl,xh,yh) /* sets plotting box boundaries--note that
                             this is for reference only; the physical
                             boundaries outside of which ldraw will not
                             draw are g_xl, etc */
-normal xl, yl, xh, yh;                            
+int xl, yl, xh, yh;
 {
     if(xl < 0 || yl < 0 || xh > g_xsize || yh > g_ysize){
         erret("\nIllegal plotting boundaries");

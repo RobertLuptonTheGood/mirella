@@ -227,7 +227,7 @@ double *pllim,*pulim;
  * this by scaling up by 10 and working in ancell space.
  */
  
-int flims(x1,x2,pxtf,psxd)
+normal flims(x1,x2,pxtf,psxd)
 double x1,x2;
 float *pxtf, *psxd;
 {

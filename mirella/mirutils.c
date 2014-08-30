@@ -151,7 +151,7 @@ char *fmt;				/* format to use */
 	 *ptr-- = '\0';
 	 switch(*ptr) {
 	  case '%':
-	    sprintf(buf,fmt);
+	    strcpy(buf,fmt);
 	    break;
 	  case 'c':
 	  case 'd':

@@ -74,9 +74,13 @@ Phar Lap tools and NDP (Greenhills)  C.   Good luck.     */
 
 /* definition of normal int */
 /* these work for 32-bit machines; revisit for 64-bit */
+#if 0                                   // old code; works on 32-bit machines
 #define  normal     int
 #define  u_normal   unsigned int 
-
+#else					// works on 64-bit machines (and should work on 32-bit too)
+#define  normal     long
+#define  u_normal   unsigned long
+#endif
 
 #define LEN 100				/* length of directory names */
 /*
@@ -88,7 +92,7 @@ extern char *im_display;
 extern char *m_opsys;
 extern char *m_cpu;
 extern char *m_ccomp;
-extern int m_ibmorder;
+extern normal m_ibmorder;
 extern char *g_printer;
 extern char m_system[];              /* system name */
 extern char m_distro[];              /* distribution if Linux */
@@ -130,7 +134,7 @@ extern char m_graphsys[];            /* for X, Xvnc or X2 */
 #define DEGPRAD 57.29577951
 #define LN2     0.693147180
 
-extern int illval;			/* illegal values */
+extern normal illval;			/* illegal values */
 extern float filval;
 #define I_FILVAL (-1L)			/* filval's bitpattern */
 #define IS_FILVAL(F) (*(long *)(&F) == I_FILVAL)

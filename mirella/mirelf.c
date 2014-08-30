@@ -761,8 +761,8 @@ void _mclose()   /* Mirella procedure for closing a file by channel number;
 /***************************** _MSEEK(), MSEEK() ***************************/
 
 normal mseek(pos,org)
-    int org;
     normal pos;
+    int org;
 {
     normal posd;
     register struct fchannel *fcp = chan[achan];
@@ -1432,7 +1432,7 @@ int c;
     n = (*fcp->funcs->write)(fcp->ffdes,&d,1);
     fcp->floc += n;
     if(n != 1) {
-       sprintf(buff,"\nError writing to channel %d",achan);
+       sprintf(buff,"\nError writing to channel %ld", (long)achan);
        erret(buff);
     }
 }

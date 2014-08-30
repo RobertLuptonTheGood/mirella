@@ -67,7 +67,7 @@ struct pnm_head_i{
 
 /* VARIABLES */
 
-extern int grafmode;			/* flag for graphics mode */
+extern normal grafmode;			/* flag for graphics mode */
 
 #if 0  /* ????????????????? */
 extern struct pnn_head_a pnm_ahead;     /* scratch pnm headers */
@@ -146,7 +146,7 @@ extern float g_fyscl;     /* float scale value along y; ie j = (y - yorg)*yscl*/
 /* note must have defined xb and xbt in routines which use these macros */ 
 #endif
                     
-extern int gd_xsize, gd_ysize;		/* size of display */
+extern normal gd_xsize, gd_ysize;       /* size of display */
 extern char *gd_base;			/* address of base of display memory */
 extern normal gd_xbsize;		/* xsize of display in bytes */
 

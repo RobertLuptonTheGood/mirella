@@ -349,26 +349,26 @@ _famaxmin()
 /************************* SIMPLE MAX AND MIN FUNCTIONS *********************/
 /* these are versions of the above with simpler calling sequences */
 
-mirella int
+mirella normal
 samax(buf, n)
 short *buf;
-int n;
+normal n;
 {
-    int scr;
-    int max;
-    int min;
+    normal scr;
+    normal max;
+    normal min;
     samaxmin(buf, n, &min, &max, &scr, &scr);
     return max;
 }
 
-mirella int 
+mirella normal 
 namax(buf, n)
 normal *buf;
-int n;
+normal n;
 {
-    int scr;
-    int min;
-    int max;
+    normal scr;
+    normal min;
+    normal max;
     namaxmin(buf, n, &min, &max, &scr, &scr );
     return max;
 }
@@ -376,9 +376,9 @@ int n;
 mirella double
 famax(buf, n)
 float *buf;
-int n;
+normal n;
 {
-    int scr;
+    normal scr;
     float max;
     float min;
     famaxmin(buf, n, &min, &max, &scr, &scr);
@@ -388,9 +388,9 @@ int n;
 mirella double
 famin(buf, n)
 float *buf;
-int n;
+normal n;
 {
-    int scr;
+    normal scr;
     float max;
     float min;
     famaxmin(buf, n, &min, &max, &scr, &scr);
@@ -413,7 +413,7 @@ narimax(buf,n,pmax)
     float *pmax;
 {
     normal amax,amin;
-    int imax,imin;
+    normal imax,imin;
     float a,b,c;
     float xm,am;
     
@@ -437,8 +437,8 @@ sarimax(buf,n,pmax)
     int n;
     float *pmax;
 {
-    int amax,amin;
-    int imax,imin;
+    normal amax,amin;
+    normal imax,imin;
     float a,b,c;
     float xm,am;
     
@@ -463,7 +463,7 @@ farimax(buf,n,pmax)
     float *pmax;
 {
     float amax,amin;
-    int imax,imin;
+    normal imax,imin;
     float a,b,c;
     float xm,am;
     
@@ -489,7 +489,7 @@ farimin(buf,n,pmin)
     float *pmin;
 {
     float amax,amin;
-    int imax,imin;
+    normal imax,imin;
     float a,b,c;
     float xm,am;
                                 
@@ -513,7 +513,7 @@ farimin(buf,n,pmin)
 mirella void _narimax()
 {
     normal n = pop;
-    int *buf = (int *)pop;
+    normal *buf = (normal *)pop;
     float amax,imax;
     
     imax = narimax(buf,n,&amax);

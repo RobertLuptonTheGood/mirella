@@ -1376,9 +1376,9 @@ always write a dec/intel byteorder crc--first byte first, no ?? .
 
 void
 crcchk(ibuf,nibuf,pcksum,pcrc)
-register int *ibuf;     /* integer array */
-register int nibuf;     /* length of same */
-int *pcksum,*pcrc;      /* pointers to the cksum and crc */
+register normal *ibuf;     /* integer array */
+register normal nibuf;     /* length of same */
+normal *pcksum,*pcrc;      /* pointers to the cksum and crc */
 {
     register int c;
     register int crc = *pcrc;
@@ -1460,8 +1460,8 @@ struct dir_t *sptr;
     int fdes;
     int ntail;
     char *bufend;
-    int checksum;
-    int crc;
+    normal checksum;
+    normal crc;
     int endflg = 0;
     int bovfl;
     int bbufno=0;
@@ -1496,10 +1496,10 @@ struct dir_t *sptr;
         getcwd(sptr->dir_dir,48);    
         strcpy(bptr->b_dirname,fcanon(sptr->dir_dir));
     }
-    sprintf(bptr->b_length,"%d",sptr->dir_size); 
-    sprintf(bptr->b_ftime,"%d",sptr->dir_ftime);
-    sprintf(bptr->b_back_stream,"%d",b_backstream);
-    sprintf(bptr->b_reclen,"%d",sptr->dir_reclen);
+    sprintf(bptr->b_length,"%ld", (long)sptr->dir_size); 
+    sprintf(bptr->b_ftime,"%ld", (long)sptr->dir_ftime);
+    sprintf(bptr->b_back_stream,"%ld", (long)b_backstream);
+    sprintf(bptr->b_reclen,"%ld", (long)sptr->dir_reclen);
     strcpy(bptr->b_sys,M_OPSYS);
 
     /* header is done. Now read the file */
@@ -1610,7 +1610,7 @@ struct dir_t *sptr;
             if(!endflg || !b_backstream || bbufno){    
                 /* if b_backstream and last block and first block,
                     calculate this below--cannot do twice */ 
-                crcchk(ibuf,nibuf,&checksum,&crc);
+	       crcchk(ibuf,nibuf,&checksum,&crc);
             }
 
 #ifdef BKDEBUG
@@ -1643,8 +1643,8 @@ struct dir_t *sptr;
                 buffer = buf0 + ((buffer-buf0 -1)/512 +1)*512;
                 btptr = (struct b_tail_t *)buffer;
                 strcpy(btptr->b_tbanner,"MIRCHECKBLOCK");
-                sprintf(btptr->b_checksum,"%d",checksum);
-                sprintf(btptr->b_crc,"%d",stdcrc(crc));
+                sprintf(btptr->b_checksum,"%ld", (long)checksum);
+                sprintf(btptr->b_crc,"%ld", (long)stdcrc(crc));
 #ifdef BKDEBUG 
                 scrprintf("\nWriting last(%d)dbuffer checksum=%d, crc=%d",
                         bbufno,checksum,stdcrc(crc));
@@ -1721,8 +1721,8 @@ char *pat;
     int ntbuf;
     int tail;
     int rbuf;
-    int checksum;
-    int crc,tcrc;
+    normal checksum;
+    normal crc,tcrc;
     char teol[8];
     int ftime;
     int ftype,ctype;                        /* file type on tape, target dsk*/

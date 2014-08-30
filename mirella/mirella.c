@@ -234,7 +234,7 @@ char progname[100];                     /* name of program (mirella,mirage,
 char out_string[MAXSTRING];		/* string for 'printf' output */
 int insane;
 int sigflg = 0;				/* set by signal handler */
-int interrupt = 0;			/* flag for ^C (^D in DSI systems) */
+normal interrupt = 0;			/* flag for ^C (^D in DSI systems) */
 int verbose = 0;			/* verbosity level */
 int use_editor = 1;			/* should I use the history editor? */
 int tibsize = TIBSIZE;                  /* input buffer size */
@@ -254,9 +254,9 @@ char m_distrotype[64];          /* distro type (Debian, RedHat) */
 char m_graphsys[64];            /* for X, Xvnc or X2 */
 
 #ifdef IBMORDER
-int m_ibmorder = 1;
+normal m_ibmorder = 1;
 #else
-int m_ibmorder = 0;
+normal m_ibmorder = 0;
 #endif
 
 struct ld_en_t{
@@ -1425,7 +1425,8 @@ int
 hand_lit(str)
 char *str;
 {
-    int n, ok ;
+    normal n;
+    int ok ;
 
     ok = number( str, &n);
     if ( ok == 1 ) {
@@ -1572,7 +1573,7 @@ stackerror:
 int
 number( str, n )
 char *str;
-int *n;
+normal *n;
 {
     int base = V_BASE;
     int len = *str++;

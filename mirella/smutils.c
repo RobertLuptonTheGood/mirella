@@ -9,7 +9,7 @@
 #define	DEF_BAUDRATE	9600
 
 static char *tty_find_capability();
-static int getline(),
+static int sm_getline(),
 	   tty_binsearch(),
 	   tty_extract_alias(),
 	   tty_fetch_entry(),
@@ -235,7 +235,7 @@ TTY *tty;
 	 continue;
       } else if (ch == '#' || isspace(ch)) {
 	 /* Discard the rest of the line and continue. */
-	 if(getline(lbuf,LBUF_SIZE,fil) == EOF)
+	 if(sm_getline(lbuf,LBUF_SIZE,fil) == EOF)
 	   return(-1);
 	 continue;
       }
@@ -268,7 +268,7 @@ TTY *tty;
       
       /* Skip rest of line if no match. */
       if (!device_found) {
-	 if(getline(lbuf,LBUF_SIZE,fil) == EOF) {
+	 if(sm_getline(lbuf,LBUF_SIZE,fil) == EOF) {
 	    return(-1);
 	 }
       }
@@ -290,7 +290,7 @@ TTY *tty;
       if (ch == '\\') {				/* escaped newline? */
 	 if((ch = getc(fil)) == '\n') {
 	    if((ch = getc(fil)) == '#') {
-	       if(getline(lbuf,LBUF_SIZE,fil) == EOF) {
+	       if(sm_getline(lbuf,LBUF_SIZE,fil) == EOF) {
 		  return(-1);
 	       }
 	    } else {
@@ -367,7 +367,7 @@ int	maxch;
  * Read a line from fil into buff, return number of chars read
  */
 static int
-getline(buff,size,fil)
+sm_getline(buff,size,fil)
 char buff[];
 int size;
 FILE *fil;
@@ -378,7 +378,7 @@ FILE *fil;
    }
 
    if(buff[size - 1] != '\0') {
-      printf("Truncating line in capfile to %d chars in getline\n",size - 1);
+      printf("Truncating line in capfile to %d chars in sm_getline\n",size - 1);
       buff[size - 1] = '\0';
       return(size - 1);
    } else {

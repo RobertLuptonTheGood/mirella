@@ -106,4 +106,6 @@ register unsigned int lb, ub;
 	    break;
     }
 }
+#else
+int mirella_qsort_c;			/* Make ld/ar/ranlib happy even if it's picky */
 #endif

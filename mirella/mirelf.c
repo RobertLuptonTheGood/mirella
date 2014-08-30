@@ -116,8 +116,17 @@ static struct specfile_t specfile[] =
 /*
  * various functions
  */
-static int illop(),nullop(),findi(),doopen(),chkspec(),frewind(),unload();
-static long lillop();
+static int illop(),findi(),doopen(),chkspec(),frewind();
+#if defined(BKTAPE) || defined(BKSCSITAPE)
+#  define NEED_LILLOP
+   static long lillop();
+#endif
+#if !defined(openb) || defined(BKTAPE) || defined(BKSCSITAPE) || defined(DOS9TAPE) || defined(VMSTAPE)
+#  define NEED_NULLOP
+   static int nullop();
+#  define NEED_UNLOAD
+   static int unload();
+#endif
 static void chki(),buflush();
 /*
  * Binary file I/O
@@ -1119,6 +1128,7 @@ showspec()
 }
 
 /************************ ILLOP(), NULLOP() *************************/
+#if defined(NEED_LILLOP)
 static long
 lillop(a,b,c)
 normal a,b,c;
@@ -1127,6 +1137,7 @@ normal a,b,c;
    return(0);
    /*NOTREACHED*/
 }
+#endif
 
 static int 
 illop(a,b,c)
@@ -1141,12 +1152,14 @@ normal a,b,c;
     /*NOTREACHED*/
 }
 
+#if defined(NEED_NULLOP)
 static int 
 nullop(a,b,c)
     normal a,b,c;
 {
     return 0;
 }
+#endif
 
 /******************* CHANNEL STACK FUNCTIONS *******************************/
 
@@ -2004,6 +2017,7 @@ int des;
     return ret;
 }
 
+#if defined(NEED_UNLOAD)
 static int 
 unload(des)  /*  rewinds and takes offline */
     int des;
@@ -2021,6 +2035,7 @@ unload(des)  /*  rewinds and takes offline */
 /*    get_tstat(); */
     return ret;
 }
+#endif
 
 static int 
 rrtposition(des)

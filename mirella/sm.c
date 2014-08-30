@@ -277,4 +277,6 @@ double asx,abx,asy,aby;
 {
    sm_ticksize(asx,abx,asy,aby);
 }
+#else
+int mirella_sm_c;			/* Make ld/ar/ranlib happy even if it's picky */
 #endif

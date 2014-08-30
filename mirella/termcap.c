@@ -14,7 +14,7 @@ adel_char()
 {
     char *p = m_term.del_char;
     if(*p == '\0') return(-1);
-    printf(p);
+    fputs(p, stdout);
     return 0;
 }
 
@@ -23,7 +23,7 @@ adel_line()
 {
     char *p = m_term.del_line;
     if(*p == '\0') return(-1);
-    printf(p);
+    fputs(p, stdout);
     return 0;
 }
 
@@ -69,7 +69,7 @@ anum_kpd()
 {
     char *p = m_term.num_kpd;
     if(*p == '\0') return(-1);
-    printf(p);
+    fputs(p, stdout);
     return 0;
 }
 
@@ -78,7 +78,7 @@ aapp_kpd()
 {
     char *p = m_term.app_kpd;
     if(*p == '\0') return(-1);
-    printf(p);
+    fputs(p, stdout);
     return 0;
 }
 
@@ -98,7 +98,7 @@ aquery_curs()    /* gets cursor position, puts in x_scur, y_scur */
         y_scur = 24;
         return -1;
     }
-    printf(p);
+    fputs(p, stdout);
     fflush(stdout);
     get1char(1);    /* need to set mode for unix; works ok for VMS anyway */
     for(i=0;i<12;i++){
@@ -127,7 +127,7 @@ asav_curs()  /* saves cursor position internally */
 {
     char *p = m_term.sav_curs;
     if(!(*p)) return -1;
-    printf(p);
+    fputs(p, stdout);
     fflush(stdout);
     return 0;
 }
@@ -137,7 +137,7 @@ ares_curs() /* restores it */
 {
     char *p = m_term.res_curs;
     if(!(*p)) return -1;
-    printf(p);
+    fputs(p, stdout);
     fflush(stdout);
     return 0;
 }
@@ -147,7 +147,7 @@ aclr_scr() /* clears screen */
 {
     char *p = m_term.clr_scr;
     if(!(*p)) return -1;
-    printf(p);
+    fputs(p, stdout);
     aput_curs(1,1);
     fflush(stdout);
     return 0;

@@ -68,4 +68,6 @@ char *symb;
    }
    return(addr);
 }
+#else
+int mirella_dynamic_c;
 #endif

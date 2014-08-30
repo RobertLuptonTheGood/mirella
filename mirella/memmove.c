@@ -35,7 +35,7 @@ int n;
    }
    return(dest);
 }
-/* #else
-static void foo() {;} */			/* fodder for picky linkers */
+#else
+int mirella_memmove_c;			/* Make ld/ar/ranlib happy even if it's picky */
 #endif
 

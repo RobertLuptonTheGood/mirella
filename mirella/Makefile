@@ -141,28 +141,28 @@ primit.c  : makeprim minit.x
 # Internal (i), external (e) and secondary (1, 2, 3) C-words
 #
 mirelic.c  : $(I_MSC_FILES) minstall mirelec.skl
-	( \
+	@( \
 	echo building mirelic.c from $(I_MSC_FILES); \
 	$(MINSTALL) -ikqw -s mirelec.skl -o mirelic.c $(I_MSC_FILES); \
 	)
 #
 mirelec.c  : $(E_MSC_FILES) minstall mirelec.skl
-	( \
+	@( \
 	echo building mirelec.c from $(E_MSC_FILES); \
 	$(MINSTALL) -ekqw -s mirelec.skl -o mirelec.c $(E_MSC_FILES); \
 	)
 mirel1c.c  : $(1_MSC_FILES) minstall mirelec.skl
-	( \
+	@( \
 	echo building mirel1c.c from $(1_MSC_FILES); \
 	$(MINSTALL) -1kqw -s mirelec.skl -o mirel1c.c $(1_MSC_FILES); \
 	)
 mirel2c.c  : $(2_MSC_FILES) minstall mirelec.skl
-	( \
+	@( \
 	echo building mirel2c.c from $(2_MSC_FILES); \
 	$(MINSTALL) -2kqw -s mirelec.skl -o mirel2c.c $(2_MSC_FILES); \
 	)
 mirel3c.c  : $(3_MSC_FILES) minstall mirelec.skl
-	( \
+	@( \
 	echo building mirel3c.c from $(3_MSC_FILES); \
 	$(MINSTALL) -3kqw -s mirelec.skl -o mirel3c.c $(3_MSC_FILES); \
 	)
@@ -202,15 +202,20 @@ $(I_MSC_FILES) $(E_MSC_FILES) $(1_MSC_FILES) $(2_MSC_FILES) $(3_MSC_FILES) :: \
 #
  : minstall.o mirexpr.oo
 mirexpr.oo : mirexpr.c
-	if [ ! -f mirexpr.o ]; then \
+	@ if [ ! -f mirexpr.o ]; then \
+		echo $(CC) -c $(CFLAGS) mirexpr.c; \
 		$(CC) -c $(CFLAGS) mirexpr.c; \
 	fi
 	touch mirexpr.oo
 minstall : minstall.o mirexpr.oo
-	( \
+	@( \
+	echo ar r $(LIBMIRELLA) mirexpr.o; \
 	ar r $(LIBMIRELLA) mirexpr.o; \
 	if test "$(RANLIB)" != "" -a -x "$(RANLIB)"; then \
-		$(RANLIB) $(LIBMIRELLA); fi; \
+		echo $(RANLIB) $(LIBMIRELLA); \
+		$(RANLIB) $(LIBMIRELLA); \
+	fi; \
+	echo $(CC) minstall.o -o minstall $(LDFLAGS); \
 	$(CC) minstall.o -o minstall $(LDFLAGS); \
 	)
 #

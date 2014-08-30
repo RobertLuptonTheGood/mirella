@@ -52,4 +52,6 @@ existing cursor and display code; they can be dummied */
 
 u_char vlta[768];
 u_char vltb[768];
+#else
+int mirella_video_c;			/* Make ld/ar/ranlib happy even if it's picky */
 #endif

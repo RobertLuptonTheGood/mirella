@@ -1,0 +1,118 @@
+strings
+Mirella strings are C strings; string addresses point to the first
+character, and they have a trailing null.
+
+Mirella has a string stack, a circular buffer of 16 strings each a
+maximum of 127 bytes long, from which strings are never popped, but are
+written over when the stack fills.  Its operators are
+
+"       ( i:string" --- toss , puts string on the sstack)
+        for example: " hello, world" puts the string on the stack and
+            pushes the address of the top of the sstack, which is the address
+            of the first character in the string.
+
+""      like " but expects blank-delimited string rather than "-delimited one
+
+spush   ( addr --- toss , pushes the string at addr onto sstack and pushes
+            addr of toss on pstack )
+
+sdown   ( --- new_toss , resets ss pointer to previous string on sstack and
+            pushes addr of new toss )
+
+sup     ( --- new_toss , resets ss pointer to next string on ss (if there is
+            one) and pushes addr of new toss )
+
+st@     ( --- toss , pushes addr of toss)
+
+st.     ( --- , prints top string on sstack )
+
+Mirella uses C strings for most string operations, but the underlying forth
+system sometimes still expects Forth strings, for which the first byte is the
+count; The strings on the stack are Forth strings, and the count is to be
+found in the address one down from the pushed address.
+
+Other string words:
+
+ct      ( addr --- , prints the C string at addr )
+
+nct     ( addr n --- , prints at most n chars of s, fills with blanks )
+
+["]     ( i:string" --- )(does: --- addr )  
+    Compiling word which compiles string literals into the dictionary. When
+    the compiled code is executed, the address of the string is pushed. Note
+    that the string is delimited by " at the end, and cannot have embedded
+    '"' marks.
+
+[""]   like ["] but expects blank-delimited string rather than "-delimited one.
+
+strcpy ( ssrc sdest --- ) copies the string at ssrc to sdest; the argument
+        order is BACKWARDS from the C function.
+
+cs!     alias for strcpy
+
+strncpy ( ssrc dest n --- ) copies the first n chars from ssrc (or all of
+        it, whichever comes first) to dest. (BACKWARDS from C)
+
+strcat ( str2 str1 --- ) concatenates string at str1 to one at str2.
+        Note that the order of the arguments is the SAME as the C
+        function
+
+cs+!    like strcat, but opposite argument order.
+
+scat ( str1 str2 --- catstr ) uses the sstack to cat str2 onto str1; rets
+        the address of the concatenated string on the sstack     
+
+strncat ( str2 str1 n --- ) cats the first n chars of str1 onto the end
+        of str2.
+
+strcmp ( str1 str2 --- ) pushes a negative int if str1<str2, 0 if equal,
+        and positive if > .
+
+strncmp ( str1 str2 n --- ) like strcmp but for the substring of the first
+        n chars of str1,2.
+
+index (str char --- addr ) pushes the address of the first occurrence
+        of char in str, 0 if none.
+
+rindex ( str char --- addr ) pushes the address of the last occurrence
+        of char in str, 0 if none.
+
+nextword ( string_addr --- word_addr ) general parser; takes string_addr
+        on first invocation, 0 thereafter; returns address of first word,
+        then next word, etc, and 0 when no more words in str. Destroys
+        input string.
+
+parse ( str_addr ptr_array_addr --- ) general parser; places pointers
+        to words in string in pointer array, ending with null pointer.
+        Assumes ptr array is big enough; destroys string.
+
+sspaces ( addr n --- ) concatenates n spaces onto the string at addr )
+
+nsct  ( str1 str2 n -- )  cats at most n chars of str2 onto str1, and
+            fills rest with blanks
+
+s.r     ( i w --- addr) converts i to ascii number in field w wide and
+            pushes address of string. Each call to a conversion routine
+            overwrites string.
+
+sf.r    ( f w d --- addr) converts f to ascii string in a field of width w
+            with d decimals. If d is negative, produces exponential format
+            with -d decimal places. If w is negative, adjusts decimal point
+            to fill field of width -w; d is ignored.
+
+itoa    ( i --- addr) converts i to ascii number string and pushes address.
+
+zitoa   ( i w  --- addr) converts i to ascii number string in field of width
+            w, filling leftward with leading zeros, and pushes address.
+
+words which convert ascii to numbers also exist, viz.
+
+atoi    ( addr --- i ) converts the string at addr to an integer and pushes
+            result on pstack. Uses C function.
+
+atof    ( addr --- f ) converts the string at addr to a float and pushes
+            result on fstack. Uses C function.
+
+\strings
+
+

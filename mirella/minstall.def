@@ -1,0 +1,64 @@
+\
+\ These first definitions are needed to simulate the old, string-matching,
+\ habits of minstall.
+\
+\ M_SYSTEM
+#define astro 1
+\ Terminals
+#define vt100 1
+\ M_OPSYS
+#define bkunix 1
+#define sysV 2
+#define pl386dos 3
+#define dsi32dos 4
+#define dsi68dos 5
+#define vms 6
+#define 386dos 7
+#define unix 8
+#define linux 9
+#define osX 10
+\ G_DISPLAY
+#define cga400 1
+#define g4010 2
+#define hercules 3
+#define vaxstation 4
+#define vga 5
+#define wy700 6
+#define xv 7
+\ IM_DISPLAY
+#define gm 1
+#define graph32 2
+#define peritek 3
+#define vga 4
+#define x11 5
+#define ativga 6
+\ G_PRINTER
+\ #define lq1500 1
+\ #define tosh351vms 2
+\ #define PCL 3
+\ M_CPU
+#define vax 1
+#define ns32032 2
+#define m68020 3
+#define convex 4
+#define i386 5
+#define sparc 6
+#define x86_64 7
+\ M_CCOMP
+#define pcc 1
+#define vmsvaxc 2
+#define Greenhills 3
+#define SVS 4
+#define NDP 5
+#define gcc 6
+\
+#define char 1			/* needed by options.h */
+#define const 1
+#define signed 1
+#define void 1
+#define volatile 1
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+\
+\ Real flags
+\
+#include <options.h>

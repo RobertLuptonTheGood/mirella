@@ -1,0 +1,588 @@
+k
+\ version 5.1, 88/12/04
+\
+#include <minstall.def>
+#define C_M 149
+\
+{
+	/* C code for mirelic.c */
+	double erf();
+        double j0();
+        double j1();
+        double jn();
+        double y0();
+        double y1();
+        double yn();
+        double asinh();
+        double acosh();
+        double atanh();
+        double tgamma();
+        double gamma();
+}
+\ Create the root vocabulary so that we can reference it from C
+V	root
+F
+f	reset-vocabs	reset_vocabs		i
+\
+v	use_editor	use_editor		i
+v	verbose		verbose			i
+\ functions--from the math library
+f	sin		sin			f @ f
+f	cos		cos			f @ f
+f	tan		tan			f @ f
+f	sqrt		sqrt			f @ f
+f	log		log			f @ f
+f	log10		log10			f @ f
+f	exp		exp			f @ f
+f	x^y		pow			f f @ f
+f	erf		erf			f @ f
+f	cosh		cosh			f @ f
+f	sinh		sinh			f @ f
+f	tanh		tanh			f @ f
+f	asin		asin			f @ f
+f	acos		acos			f @ f
+f	atan		atan			f @ f
+f	atan2		atan2			f f @ f
+f	fabs		fabs			f @ f
+f       asinh           asinh                   f @ f
+f       acosh           acosh                   f @ f
+f       atanh           atanh                   f @ f
+f	srand		srand			i
+f	rand		rand			@ i
+f       j0              j0                      f @ f
+f       j1              j1                      f @ f
+f       jn              jn                      i f @ f
+f       y0              y0                      f @ f
+f       y1              y1                      f @ f
+f       yn              yn                      i f @ f
+f       gamma           tgamma                  f @ f
+f       loggamma        gamma                   f @ f
+f       floor           floor                   f @ f
+f       ceil            ceil                    f @ f
+\ from mirmathf.c
+f       i0              i0                      f * f
+f       i0emx           i0emx                   f * f
+f       i1              i1                      f * f
+f       i1emx           i1emx                   f * f
+f       i2              i2                      f * f
+f       i2emx           i2emx                   f * f
+f       i_n             i_n                     i f * f
+f       log2            log2                    f * f
+\ from mirellio.c
+#if 0
+f	mdir		mdir			p * p
+f	tdir		tdir			p * p
+f	hdir		hdir			p * p
+f	pardir		pardir			p * p
+#endif
+c	infilename	in_fl_name		*c
+f	get_def_value	get_def_value		s * s
+c       nullstr         nullstr                 *c
+f       _getenv         m_getenv                s * s
+f       _setenv         m_setenv                s s
+f       _putenv         m_putenv                s
+f	expect		expect			p i % i
+f	mexpect		mexpect			p i % i
+f	_savedic	save_dic		s
+f	_getdic		get_dic			s
+p	system		sys
+c	system_code	system_code		i
+f	dot_push	dot_push		i
+f	fdot_push	fdt_push		f
+f       u.r             udotr                   i i             \ jeg0604
+f       .r              ndotr                   i i
+p	-.		dot_pop
+p	-f.		fdt_pop
+p	flushit		flushit
+p	_logfile	_logfile
+f       clogfile        logfile                 s  \ same as logfile in mirella.m?
+s	logfname	+logfname		c
+p	ct		m_cprint
+f	hasext		hasext			s * i
+f	hasdir		hasdir			s * i
+f	baseptr		baseptr			s * p
+f       dirname         dirname                 s * p
+f	extptr		extptr			s * p
+f	basename	basename		s * p
+f	fbasename	fbasename		s * p
+f       basext          basext                  s * p
+f       fbasext         fbasext                 s * p
+f	mcfname		mcfname			s * p
+p	kwait		kwait
+f	bells		bells			i % i
+f	ebells		ebells			i
+v	grafmode	grafmode		i
+f       scrput          scrput                  i
+f       scrputs         scrputs                 p
+p       vwait           vwait
+p       lwait           lwait
+v       dir_list        +dir_list               p 10
+c       Nsdir           ns_dir                  i
+f       add_dirpath     add_dirpath             s
+s       full_name       full_name               c
+s       progname        progname                c
+f       _fcopy          mfcopy                  s s
+\ from mircintf.c
+p	iqsort		iqsort
+p	<iqsort		r_iqsort
+p	fqsort		fqsort
+p	<fqsort		r_fqsort
+p	sqsort		sqsort
+p	<sqsort		r_sqsort
+p	mqsort		mqsort
+p	type		m_type
+p	-trailing	dash_trlng
+p	df.r		m_dfdotr
+p	strncpy		m_strncpy
+p	strcpy		m_strcpy
+p	strcat		m_strcat
+p	strncat		m_strncat
+p	index		m_index
+p	rindex		m_rindex
+p	strlen		m_strlen
+p	strcmp		m_strcmp
+p	strncmp		m_strncmp
+p       strchr          m_strchr
+p       strrchr         m_strrchr
+p       strstr          m_strstr
+p       strcasestr      m_strcasestr
+p       strpbrk         m_strpbrk
+p	memcpy		m_memcpy
+p	atoi		m_atoi
+p	atof		m_atof
+p	nextword	m_nextword
+p	parse		m_parse
+s	mdelimar	mdelimar		c
+p	itoa		m_itoa
+p	zitoa		m_zitoa
+p	sf.r		sfdotr
+p	s.r		sdotr
+p	sspaces		sspaces
+f	sequence	sequence		i i
+f	seq1		seq1			i i
+f	scat		scat			p p * p
+p	version		version
+f	fspush		fspush			p * p
+p	getcwd		m_getcwd
+p	_chdir		m_chdir
+p	_mkdir		m_mkdir
+p	_rmdir		m_rmdir
+f	round		mround			f * i
+f	exp10		exp10			f * f
+c	LEOL		m_leol			i 
+c	eol		m_eol			p
+f       cinterp         cinterp                 p % i
+\ history--from miredit.c
+p	history		history_list
+p	write_hist	write_hist
+f	_setterminal	setterminal		s
+f       screensize      screensize              * p
+f	newterminal	newterminal		p % i
+c	m_fterm		pmfterm			p
+c       m_term          pmterm                  p
+c	Sizfterm	sizfterm		i
+c       Sizterm         sizterm                 i
+c       Termcssize      termconssize            i
+p	del1		delete_last_history
+f	_read_map	read_map		s % i
+f	define_map	define_map		s s
+p	list_map	list_map
+v	remember_history_line	remember_history_line	i
+\ help file management--from mirhelp.c
+p	_makeindex	makeindex
+p	_ghelp		m_ghelp
+p	_ghelpall	m_ghelpall
+p	_fixhelp	m_fixhelp
+p	_addhelpfile	addhelpfile
+p	_browse		browse
+p	res_help	res_help		v % i
+f	strsrch         strsrch			p p i * p
+f	rstrsrch        rstrsrch		p p i * p
+\ memory management--from mirelmem.c
+c	heaphigh	*heaphigh		c   
+c	heaplow		*heaplow		c   
+c	heapnext	*heapnext		c   
+v	heaporigin	*c_endmem		c   
+v	endprogram	*c_endprog		c   
+v       prefreeflg      prefreeflg              i
+p	_memalloc	_memalloc
+p	chfree		_chfree
+p	_memfree	_memfree
+f       _qmemfree       qmemfree                p
+p	showalloc	showalloc
+p	freeall		freeall
+p	_matralloc	_matralloc
+p       _mat3alloc      _mat3alloc
+c       Nmchan          nmchan                  i
+\ from mirella.c
+v	pstring2	pstring2		c
+c	origin		*origin			i   
+f	_erret		erret			s
+f	setsigdfl	setsigdfl		i
+s	home_dir	home_dir		c
+c       dict_end        *dict_end               i
+f       raise           raise                   i 
+v       m_errexit       m_errexit               i   \ debug
+f       intp_word       intp_word               p
+f       exec_one        exec_one                i
+c       Tibsize         tibsize                 i
+#if defined(SIGNALS)
+#define C_M (C_M + 7)
+c	SIGINT		m_sigint		i
+c	SIGILL		m_sigill		i
+c	SIGIOT		m_sigiot		i
+c	SIGEMT		m_sigemt		i
+c	SIGSEGV		m_sigsegv		i
+c	SIGBUS		m_sigbus		i
+c	SIGFPE		m_sigfpe		i
+#endif
+\ from mirsys.c or C libr
+p	pause		_pause
+f	ifpause		dopause			* i
+v	interrupt	interrupt		i   
+c	m_terminal	*m_terminal		c
+c	g_display	*g_display		c
+c	im_display	*im_display		c
+c	m_opsys		*m_opsys		c
+c	m_ccomp		*m_ccomp		c
+c	m_cpu		*m_cpu			c
+s	m_system	m_system		c
+s       m_distro        m_distro                c
+s       m_distrotype    m_distrotype            c
+s       m_graphsys      m_graphsys              c
+c	M_ibmorder	m_ibmorder		i
+f	sleep		sleep			i %@ i
+p	suspend		suspend			v % i
+v	m_ltime		m_ltime			c  \ Cheat; m_ltime is a structure
+v       m_altime        m_altime                c  \  " "
+v	m_ytime		m_ytime			i
+v       m_aytime        m_aytime                i  
+f	getltime	getltime		* s
+f       getutime        getutime                * s
+f       cdatestr        datestr                 * s   \ fix this--words in c & m
+f       mctime          mctime                  i * s
+f       mcutime         mcutime                 i
+f	starttimer	starttimer		* i      \ --- timer
+f	waituntil	waituntil		i i      \ interval timer ---
+f	ntimer		ntimer			i * i    \ timer --- value 
+p	startwatch	startwatch
+f	stopwatch	stopwatch		* i      \ --- value
+f	waitfor		waitfor			i        \ ms ---
+#if M_OPSYS == vms
+f	_spawn		spawn			s s
+f	attach		attach			i
+f	vgetpid		vgetpid			s * i
+f	vmsrealtime	vmsrealtime		i
+v	vms_tblk	vms_tblk		i
+v	vms_bblk	vms_bblk		i
+f	creatvms	creatvms		p i i
+#endif
+\ files--from mirelf.c  & the C library
+f	unlink		unlink			s * i
+f	_rename		rename			s s * i
+p	seek		_mseek
+p	tell		_mtell
+v	achan		achan			i   
+v	bread		nread			i   
+v	rdeof		rdeof			i   
+p	_fchannel	_fchannel
+p	_fopen		_mfopen
+p	_gopen		_mgopen			\ redefined in 'sys'.m
+p	_fclose		_mfclose
+p	close		_mclose
+p	write		_mwrite
+p	read		_mread
+p	channel		_mchannel
+p	showchan	showchan
+p	rewind		_mrewind
+p	mskip		_mskip
+p	rskip		_mrskip
+p	tfwd		_mtfwd
+p	tback		_mtback
+p	unload		_munload
+p	tposition	_mtposition
+p	end-file	_mweof
+p	retension	_mretension
+p	getfno		_mtgetfno
+p	showspec	showspec
+f	ungetc		mfungetc		i
+f	fgets		mfgets			p i % p
+f       fgetsnc         mfgetsnc                p i % i
+f       fgetsncb        mfgetsncb               p i % i
+f	fputs		mfputs			p % i
+p	flush		bflush			v % i
+p	unread		_munread
+p	puteol		puteol
+p	reopenw		reopenw
+p	reopenr		reopenr
+v	tstrict		tstrict			i
+p	_faccess	_faccess
+f	_mktemp		mir_mktemp		p * p
+f	pushchan	pushchan		i
+p	popchan		popchan
+p	swapchan	swapchan
+f	rollchan	rollchan		i
+v	blkfsiz		blkfsiz			i
+v	special_names	+special_names		n 0
+o	_mfname		special_names[0].mfname
+o	_opsname	special_names[0].opsname
+#if M_OPSYS == vms
+p	showblk		showblk
+f	closeblk	closeblk		i * i
+f	ntcloseblk	ntcloseblk		i * i
+#endif
+\ and from mirgdev.c
+f	_wpgraph	wpgraph			s
+f	_gwpgraph	gwpgraph		s
+f	wpstring	wpstring		s 
+v	prmag		prmag			i
+\ from mirarray.c
+f	narsum		narsum			p i * i
+f	sarsum		sarsum			p i * i
+f	farsum		farsum			p i * f
+f	naverage	naverage		p i * f
+f	saverage	saverage		p i * f
+f	faverage	faverage		p i * f
+f	naradd		naradd			p p i
+f	saradd		saradd			p p i
+f	faradd		faradd			p p i
+f	narfmul		narfmul			p i f
+f	sarfmul		sarfmul			p i f
+f	farfmul		farfmul			p i f
+f	narfaccum	narfaccum		p p i f
+f	sarfaccum	sarfaccum		p p i f
+f	farfaccum	farfaccum		p p i f
+f	narcon		narcon			p i i
+f	sarcon		sarcon			p i i
+f	farcon		farcon			p i f
+p	namaxmin	_namaxmin
+p	samaxmin	_samaxmin
+p	famaxmin	_famaxmin
+f       samax           samax                   p i * i
+f       namax           namax                   p i * i
+f       famax           famax                   p i * f
+f       famin           famin                   p i * f
+p	narimax         _narimax
+p	sarimax         _sarimax
+p	farimax         _farimax
+p       farimin         _farimin
+f	nasolve		nasolve			p i i * f
+f	sasolve		sasolve			p i i * f
+f	fasolve		fasolve			p i f * f
+f       fquadsolve      fquadsolve              f p p i * f
+f       fquadinterp     fquadinterp             f p p i * f   \ these jeg9812
+f	nainterp	nainterp		p f * i
+f	sainterp	sainterp		p f * i
+f	fainterp	fainterp		p f * f
+f	sarbswp		sarbswp			p i
+f	narbswp		narbswp			p i
+fi      sarmask         sarmask                 p i i
+fi      carmask         carmask                 p i i
+fi      narmask         narmask                 p i i
+\ these will be static, but are exported here for test
+f       makesgausfil    makesgausfil            f
+v       sgausfil        +sgausfil               s 50
+v       sdgausfil       +sdgausfil              s 50
+v       s2gausfil       +s2gausfil              s 50
+v       sgauswt         +sgauswt                f 50
+v       sgausnw         sgausnw                 i
+v       sgauswsum       sgauswsum               i
+\ to here
+f       fargausmth      fargausmth              p p i f
+f       sargausmth      sargausmth              p p i f
+f       fmatgausmth     fmatgausmth             p i i f
+f       smatgausmth     smatgausmth             p i i f
+f       smatgausmthb    smatgausmthb            p i i f p
+\ f       fpicmax         fpicmax                 p i i i i i p
+\ f       spicmax         spicmax                 p i i i i i p
+f       sardgausmth     sardgausmth             p p i f
+f       sargaupkfind    sargaupkfind            p i f i * f
+c       Size_pk         size_pk                 i
+f       sgausimgval     sgausimgval             p i i p
+f       sgausimgderiv   sgausimgderiv           p i i p
+f       sgausimg2mom    sgausimg2mom            p i i p
+v       pk_alphadp      pk_alphadp              f
+v       gau_gmat        ++gau_gmat              s 50 50
+f       sgausimgpkcent  sgausimgpkcent          p i i i i i i f p % i
+f       fimredres       fimredres               p i i p i f f
+f       simredres       simredres               p i i p i f f
+f       simpkfinder     simpkfinder             p p i i i i i i f p * i
+f       simhist         simhist                 p i i i i p p p 
+\ from mirscrn.c
+#if defined(DOS32)
+p	push_scr	push_scr
+f	pop_scr		pop_scr			i
+f	show_scr	show_scr		i
+p	swap_scr	swap_scr
+f	sel_scr		sel_scr			i
+#endif
+p	get_scur	get_scur		v % i
+p	put_scur	put_scur		v % i
+f	putcur		putcur			i i % i
+p	clear_scr	clear_scr		v % i
+p	home_scur	home_scur		v % i
+v	x_scur		x_scur			i
+v	y_scur		y_scur			i
+p	sav_scur	sav_scur		v % i
+p	res_scr		res_scr
+p       reset_scr       reset_scr             
+v	m_chgt		m_chgt			i
+v	m_cwid		m_cwid			i
+v	m_ctab		++m_ctab		c 96 12
+v	m_cmask		+m_cmask		c 12
+f	setfont		setfont			i
+c       scrorig         scrorig                 p
+v	dosansiflg	dosansiflg		i
+\v      dosterm         dosterm                  \ cheat; actually a struct
+\ from mirmatrx.c
+p	madd		m_madd
+p	mcmul		m_mcmul
+p	mmul		m_mmul
+p	vmmul		m_vmmul
+p	mvmul		m_mvmul
+p	matinv		m_matinv
+p	linsolv		m_linsolv
+f       tridi           tridi                   p p p p p i
+f       tridi2          tridi2                  p p p p p i
+f       trididd         trididd                 p p p p p p i
+\ from mirsplin.c
+f	circe		circe			f p i * i
+v       circechatter    circechatter            i
+f	linterp		linterp			f p p i * f
+f	gsplinit	gsplinit		p p p i f f
+f	splinit		splinit			p p p i
+v	splder		splder			f
+p	spline		m_spline
+f	integral	integral		f f p p p i * f
+f	filefnarray	filefnarray		p i i i * p
+f	dotabfun	dotabfun		f p * f
+v       bc_imat         ++bc_imat               f 4 4
+f       bckern          bckern                  f * f
+f       bicube          bicube                  f f p i i * f
+\ mirhist.c 
+f	initmask	initmask		p i
+f	setmask		setmask			p p f f i * i
+p	puthist		m_puthist
+p       puthistex       m_puthistex
+f	clrhist		clrhist			p i
+f	anhist		anhist			p i p * f
+f	makeder		makeder			f p i
+f	foldder		foldder			i p i p i * f
+f	findmode	findmode		p i p i * f
+v	regstat		regstat			f       \ cheat; this is a struct
+f	gregress	gregress		p p p i p
+f	regress		regress			p p p i
+f       sregress        sregress                p p i
+f	stathist	stathist		p i
+f       _mfclip         mfclip                  p i f p p p p
+f       _mfclip2        mfclip2                 p p i f p p p
+p       mmfclip2        mmfclip2
+f       _mfclip3        mfclip3                 p p p i f p p p
+p       mmfclip3        mmfclip3
+\ mirorpol.c
+f	mkorpol		mkorpol			p p i i
+f	orpfit		orpfit			p p i
+\ This was originally declared as taking no arguments, returning void. A bug?
+p	m_poly		m_poly
+\ mirameba.c
+f	amoeba		amoeba			p i f p p % f
+f	samoeba		samoeba			p p p i % f
+v	am_iter		am_iter			i
+v	am_tol		am_tol			f
+\ from mirdir.c
+f	_fcanon		fcanon			p * p
+f	wildmatch	wildmatch		p p * i
+f	dscan		dscan			s * i
+f	nextfile	nextfile		* s
+f	diropen		diropen			s * i
+f	dirread		dirread			* s
+f	_getstat	getstat			p p * i
+f	_isdir		isdir			p * p
+p	_pushd		_pushd
+p	swapd		swapd
+p	popd		popd
+p	rolld		rolld
+p	cleardirs	cleardirs
+p	showdirs	showdirs
+f	dsbackup	dsbackup		p
+f	dsrestore	dsrestore		i p
+p	freeback	freeback
+v	b_bigblk	b_bigblk		i
+v	b_forceflg	b_forceflg		i
+v	b_askflg	b_askflg		i
+v	b_listflg	b_listflg		i
+v	b_stoansi	b_stoansi		i
+v	b_backstream	b_backstream		i
+p	isasciibuf	m_isasciibuf
+f	memchk		memchk			i p i
+#if M_OPSYS == pl386dos
+\ 386 test stuff
+f	realint		realint			p
+f	malloc86	malloc86		i * i
+f	free86		free86			i * i
+\ f	dosmove_from	dosmove_from		p p i
+\ f	dosmove_to	dosmove_to		p p i
+f	output		output			i i
+f	input		input			i * i
+f	vgaiminit	vgaiminit		i
+f	vgagrinit	vgagrinit		i
+f	setreadplane	setreadplane		i
+p	vgaon		vgaon
+p	vgaoff		vgaoff
+f	INT86		INT86			i p
+p	dos_clr_scr	dos_clr_scr
+p	dos_del_line	dos_del_line
+f	dos_scrnprt	dos_scrnprt		p
+f	dos_scrnput	dos_scrnput		i
+f	setdosattrib	setdosattrib		i i
+f	dos_put_curs	dos_put_curs		i i
+f	dos_forw_curs	dos_forw_curs		i
+f	dos_del_line	dos_del_line
+v	wlbuf		wlbuf			i
+v	wlx		wlx			i
+p	vgaopen		vgaopen
+p	vgaclose	vgaclose
+p	dos_getdisplay	dos_getdisplay
+v	dosdisplay	dosdisplay		i
+v	dosmonitor	dosmonitor		i
+#endif
+#ifdef DLD
+#define C_M (C_M + 4)
+f	_read_objfile		read_objfile	s
+f	_unread_objfile		unread_objfile	s
+f	_get_function		get_function	s * p
+f	_get_symbol		get_symbol	s * p
+#endif
+\ From mirutils.c
+p	sprintf		forth_printf
+\ From timer.c
+f       add-timer       add_timer       s i * i
+f       delete-timer    delete_timer    i % i
+p       print-timers    print_timers
+\ from mirrand.c
+fi   ran2           ran2                   * f
+fi   ran3           ran3                   * f
+fi   iran2          iran2                  * i
+fi   iran3          iran3                  * i
+fi   seed2          seed2                  i
+fi   seed3          seed3                  i
+fi   ndf            ndf                    f * f
+fi   npd            npd                    f * f
+fi   ndfi           ndfi                   f * f
+fi   nrand          nrand                  * f
+\ char routines from mircintf.c
+f    toupper        m_toupper              i * i
+f    tolower        m_tolower              i * i
+f    isspace        m_isspace              i * i
+f    isalpha        m_isalpha              i * i
+f    isdigit        m_isdigit              i * i
+f    isalnum        m_isalnum              i * i
+f    islower        m_islower              i * i
+f    isupper        m_isupper              i * i
+f    iscntr         m_iscntrl              i * i
+f    strtolower     strtolower             p * p
+f    strtoupper     strtoupper             p * p
+#define C_M 160
+\Expect (C != M) == C_M
+\Expect typeless == 1
+\Expect no_size == 0

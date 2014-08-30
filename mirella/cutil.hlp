@@ -1,0 +1,149 @@
+errors
+Mirella has a universal error handler which returns control to the outer
+    interpreter; see also the section under interrupts.
+        
+void erret(char *s)    /* does longjmp to outer interpreter and prints s; 
+                        if called before outer interpreter is active, exits 
+                        to OS; if called while compiling forth code, handles 
+                        load stack properly. If s is 1, prints nothing */
+\errors
+
+
+forth_exec
+int 
+cinterp(char *cstr)   /* executes one forth word from C, name cstr. slow,
+                        but handy .  Returns 1 if successful, 0 if
+                        cannot find word; if execs same word repeatedly,
+                        searches only once; uses saved cfa on subsequent
+                        calls  */
+int 
+cexec(token_t tp)    /* if you have the cfa (tp), use this */
+\forth_exec
+
+parsing
+char *
+nextword(char *cpp)   /* finds pointer to next word in string,
+                    entries separated by whitespace or commas; first
+                    invocation takes sting address; subsequent ones
+                    take null; returns null at end of string. Destroys
+                    string, so make a copy if that upsets you.*/
+
+int 
+parse(char *str,char **argv)   
+                    /* parses str, putting pointers to the successive
+                    words in it in argv, which is terminated with a
+                    null pointer. the routine returns the count. IT
+                    IS ASSUMED THAT ARGV IS LARGE ENOUGH */
+\parsing
+
+memory_alloc
+Mirella has a memory allocator (compatible with malloc()) which has a C
+interface, and which should be used in supporting C code in preference
+to malloc().
+
+void **
+memalloc(char *name,normal nbytes)       
+        /* allocates nbytes of storage, returns a "memchan", a pointer to  
+           a descriptor structure for the allocation, of which the first 
+           entry, a pointer, is the pointer to the allocated memory. Thus 
+           the usage is, eg.
+    char **mpptr = memalloc("namestring",128);
+    char *nameptr = *mpptr;  /* is the pointer to the allocated block */
+void ***
+matralloc(char *name,normal nrows,normal ncols,normal eltsize)
+        /* allocates storage for a matrix, nrows X ncols with elements of
+           size eltsize bytes, and sets up an array of line pointers.
+           returns a memchan pointer. Usage is, eg.
+    float ***mpptr = matralloc("matname",34,57,sizeof(float));
+    float **fmatrix = *mpptr;
+    float fij = fmatrix[i][j]; is the i, j element of the matrix.*/
+int
+memfree(char *name)
+        /* frees memory allocated under string name; rets 0 if successful,
+            -1 if not */
+int
+chfree(void **mpptr)
+        /* frees memory at MEMCHAN mpptr. NB!!! This is the return argument of
+            memalloc or matralloc, NOT the address of the allocated block. 
+            returns 0 if successful, -1 if not */
+This code should be used in any cases in which memory may not be freed before
+returning to the Mirella environment.
+\memory_alloc
+
+graphics
+GRAPHICS:
+There is a complete C graphics interface in the files mirgraph.c, mirplot.c
+for both bitmap and vector graphics. If you MUST use them, peruse the
+code, but please use the Mirella interface; it is infinitely nicer for
+graphics, and no pains have been taken to make the C functions either
+appropriate or very friendly.
+\graphics
+
+interrupts
+normal
+dopause()
+        /* returns number of times ^C has been pressed since last call to
+        erret(); in current implementation, erret() is called by interrupt
+        handler if count exceeds 5, which allows escape to interpreter from
+        almost any situation. You should code calls to dopause() in long loops
+        and take appropriate escape action (finally calling erret()) to enable
+        clean exits. The macros
+
+#define  pause(str)     if(dopause()) goto str
+    /* str is a label. It MUST point to code that eventually does an
+    erret(), or the interrupt signal handler will not be reset.*/
+#define  pauseerret()   if(dopause()) erret(1)
+#define  pausemsg(str)  if(dopause()) erret(str) 
+
+        from mirella.h are useful, especially pause(label); the code at
+        label should close any open files, free any temporarily allocated
+        memory, and do an erret().
+\interrupts
+   
+stack_handling
+STACK HANDLING:
+The Mirella stack can be handled in C code. The macros (defined in 
+mirella.h) are
+    fpop       pop the float stack:         float x = fpop;
+    pop        pop the parameter stack:     normal x = pop;
+    push(xx)   push xx on the param. stack: push(xx);
+    fpush(xxx) push xxx on the float stack: fpush(xxx);
+    cppop      pop a pointer from the parameter stack:     
+                                            (blat *)xx = (blat *)cppop;
+    cspop      pop a string pointer from the parameter stack:
+                                            (char *)str = cspop;
+\stack_handling
+
+
+utils
+normal *
+aligned(u_char *addr)  
+        /* returns the next address at addr or foll aligned on
+        a normal (long) boundary */
+void 
+bufcpy(char *dest, char *src,normal n)
+        /* copies n bytes from src to dest */
+void 
+clearn(normal n,char *buf)
+        /* fills the buffer buf with n nulls */
+void 
+filln(normal n,char *buf,char chr)  
+        /* fills the buffer buf with n copies of chr */
+char 
+*envalloc(normal s)  
+        /* allocates space in appl. environment area. 
+        s in bytes; returns address */
+void 
+frchk(double f,double f1,double f2,msg)  
+        /* ditto for floats */
+        label should close files, free malloc'ed memory, and do an erret().
+void 
+irchk(int n,int n1,int n2,char *msg) 
+        /* range check n1 <= n < n2; if not erret(msg) */
+int
+_yesno()        
+        /* waits for NEWLINE terminated terminal input; returns
+        1 for 'y' or 'Y', 0 for 'n' or 'N'; does not return
+        until one of these is typed. */
+\utils
+

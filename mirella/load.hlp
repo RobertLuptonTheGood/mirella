@@ -1,0 +1,23 @@
+loading
+load        ( i:name --- , loads the file name)
+_load       ( addr ---, loads the file whose name is the string at addr )
+
+loads may be nested seven deep.
+
+More than one load cannot be executed from any colon definition, and
+    the user must be aware that loading does not commence until
+    control returns to the outer interpreter.
+thus
+    load util.m load mirella.m load vms.m
+
+works, but 
+
+: loadit ["] util.m" _load ["] mirella.m" _load ["] vms.m" _load ;
+
+will not execute properly.
+
+The default extension for Mirella source filenames is '.m'. They MUST
+have an extension.
+
+\forth
+

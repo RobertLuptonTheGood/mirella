@@ -1,0 +1,168 @@
+#include <minstall.def>
+#define C_M 35
+\Expect typeless == 0
+\Expect no_size == 0
+I3	init_mgs	\ allocate space for font tables and init graphics
+\			   structures
+f	gmode		gmode			i
+\  graphics--from mirgraph.c
+f	allocgraph	allocgraph		i i i
+f       gallocgraph     gallocgraph             i i i i i
+f	setgraph	setgraph		i
+f	freegraph	freegraph		i
+p	egraph		egraph
+p	showgraphs	showgraphs
+f	ldraw		ldraw			i i i
+f	rdraw		draw			i i i
+f	gpoint		gpoint			i i 
+f       g_setpoint      g_setpoint              i i
+c	G_xsize		g_xsize			i   
+c	G_ysize		g_ysize			i   
+c	G_xbsize	g_xbsize		i   
+c       G_xlp           g_xlp                   i
+c       G_xhp           g_xhp                   i
+c       G_ylp           g_ylp                   i
+c       G_yhp           g_yhp                   i
+c       G_bitscol       g_bitscol               i
+c       G_bitpix        g_bitpix                i
+v       g_tickleni      g_tickleni              i
+v	mgraph		++mgraph		c   1  1   \ don't know how big
+c	gpointer	gpointer		p   
+c	Gchan		gchan			i   
+c	G_vector	g_vector		i
+c	G_bitmap	g_bitmap		i
+v	c_gcnvec	c_gcnvec		i
+c	+mvgraph	mvgraph			p
+c	Sizvpt		sizvpt			i
+f	gstring		gstring			s f f
+f	gstrlen		gstrlen			s f f * i
+v	ltype		ltype			i   
+v	lweight		lweight			i   
+v	g_lcolor	+g_lcolor		c 3
+c       g_pcolor        g_pcolor                p
+c	G_xold		g_xold			i
+c	G_yold		g_yold			i
+f       ilinecolor      ilinecolor              p
+f       pgmgpoint       pgmgpoint               i i i
+f       ppmgpoint1      ppmgpoint1              i i i i i
+f       ppmgpoint2      ppmgpoint2              i i p
+f       pgmplpoint      pgmplpoint              i i i
+f       ppmplpoint1     ppmplpoint1             i i i i i
+f       ppmplpoint2     ppmplpoint2             i i p
+#if 0
+f	g>screen	gtoscreen		i i
+f	movescreen	movescreen		i i
+p	c>screen	ctoscreen
+p	r>screen	rtoscreen
+f	_ingraph	ingraph			s i
+f	_outgraph	outgraph		s
+#endif
+p	drawlist	drawlist
+p	bdrawlist	bdrawlist
+f	_invector	invector		s i
+f	_outvector	outvector		s
+f	exgraph		exgraph			i i i i i
+f	insgraph	insgraph		i i i
+f 	g_isalloc	g_isalloc		i * i
+f       transgraph      transgraph              i
+\ from mirgdis.c
+p	gers		gers
+p	gbegin		gbegin
+p	gend		gend
+v	grafmode	grafmode		i
+\ v	grafcolor	grafcolor		i
+\ f	set_grafcolor	set_grafcolor		i * v
+c	g_mask		g_mask			p
+\ VAXSTATION specific routines from mirgdis.c
+#if 0 && G_DISPLAY == vaxstation
+f	delgwin		delgwin			i
+f	popgwin		popgwin			i
+p	pushgwin	pushgwin
+p	bmtowin		bmtowin
+p	wintobm		wintobm
+#endif
+\ G4010 specific stuff from mirgraph.c
+#if G_DISPLAY == g4010
+#define C_M (C_M + 1)
+f	_g4010file	g4010file		s
+#endif
+\ from mirplot.c
+p	plotinall	plotinall
+p	plotinframe	plotinframe
+p	ffgraph		ffgraph
+p	ssgraph		ssgraph
+p	nsgraph		lsgraph
+p	nigraph		lgraph
+p	sigraph		sgraph
+p	figraph		fgraph    \ these forthnames changed 121022
+p	xscale		xscale
+p	yscale		yscale
+p	gframe		gframe
+p       gridframe       gridframe
+f       g_frame         frame                   f f i f f i
+f	gbox		gbox			i i i i
+p	msdraw		msdraw
+f	xlabel		xlabel			s
+f	ylabel		ylabel			s
+p	label		label
+p	flabel		flabel
+p	spoint		mspoint
+f	xtod		xtod			f * i
+f	ytod		ytod			f * i
+p	lineconnect	lineconnect
+p	histogram	histogram
+p	points		points
+v	g_angle		g_angle			f   
+v	g_magn		g_magn			f   
+v	g_symb		g_symb			i
+v	g_ssize		g_ssize			i
+v	g_xh		g_xh			i
+v	g_xl		g_xl			i
+v	g_yh		g_yh			i
+v	g_yl		g_yl			i
+v	g_xls		g_xls			f
+v	g_xhs		g_xhs			f
+v	g_yls		g_yls			f
+v	g_yhs		g_yhs			f
+v       g_fxorg         g_fxorg                 f
+v       g_fyorg         g_fyorg                 f
+v       g_fxscl         g_fxscl                 f
+v       g_fxhi          g_fxhi                  f
+v       g_fyhi          g_fyhi                  f
+v	g_stdflg	g_stdflg		i
+v	g_numflg	g_numflg		i
+v	g_syxnum	g_syxnum		f
+v	g_sxynum	g_sxynum		f
+v	g_yvflg		g_yvflg			i
+v	g_xdec		g_xdec			i
+v	g_ydec		g_ydec			i
+\ from mirpnm.c
+f       allocpbmgraph   allocpbmgraph           i i i
+f       allocpgmgraph   allocpgmgraph           i i i
+f       allocppmgraph   allocppmgraph           i i i
+f       gispbm          gispbm                  * i
+f       gispgm          gispgm                  * i
+f       gisppm          gisppm                  * i
+v       pnm_ahead       pnm_ahead               i  \ jeg9808-cheat, struct
+v       pnm_ihead       pnm_ihead               i  \ ditto
+f       getpnmhead      getpnmhead              p * p \ jeg9808
+f       makepbmhead     makepbmhead             i i * p
+f       makepgmhead     makepgmhead             i i i * p
+f       makepnmhead     makepnmhead             i i i i * p
+f       _putpbm         putpbm                  p
+f       _getpbm         getpbm                  p i
+f       _putpgm         putpgm                  p
+f       _getpgm         getpgm                  p i
+f       _putppm         putppm                  p
+f       _getppm         getppm                  p i
+f       _putpnm         putpnm                  p
+f       _getpnm         getpnm                  p i
+f       _putpgmimg      putpgmimg               i i p
+f       _putpartpgmimg  putpartpgmimg           i i i i i i p
+f       _putppmimg      putppmimg               i i p
+f       fmattopgm       fmattopgm               f f f f f f i i p
+f       smattopgm       smattopgm               p p i i i i i 
+f       buftopgm        buftopgm                p i
+#define C_M 35
+\Expect (C != M) == C_M
+

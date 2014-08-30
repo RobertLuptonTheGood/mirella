@@ -1,0 +1,121 @@
+gen_termio
+This help screen deals with keyboard/screen i/o. 
+Fundamental words:
+
+key     ( --- keycode , waits for keystroke and pushes ascii code; for
+            keys which return more than one char, must invoke as many
+            'key's as you expect characters )
+emit    ( ascii_code --- , prints the ascii char on the screen. If logging is
+            enabled, also writes to log file. writing to screen is suppressed
+            if user variable silentout is TRUE )
+type    ( addr n --- , prints the first n char starting at addr )
+ct      ( addr --- , prints the string at addr until a null is encountered )
+.       ( i --- , prints the integer on the stack )
+u.      ( i --- , prints the integer as an unsigned quantity )
+.r      ( i w --- , prints the integer i in a field of width w )
+f.      ( (f)a --- , prints the float (f)a on the float stack )
+f.r     ( (f)a w d --- , prints the float (f)a in a field of width w, 
+            d decimal places)
+?, s?, f?  take address and print the value of the int, short, float there
+expect  ( addr count --- , collects at most count chars from keyboard
+            and puts string at addr; terminates at count or at <cr>; input
+            editor is active for this input )
+logfile ( i:name --- , opens name as a log file and records all input via
+            'key' and all output via 'emit' there; APPENDS to any existing
+            text. )
+logoff  ( --- , closes current log file if any )
+logon   ( --- , reopens last-written log file in append mode)
+sequence ( n w --- ) moves cursor to beginning of CURRENT line and writes
+            n in a field w wide. Does NOT go through Mirella i/o, so does not
+            write in log file. Useful for process counting.
+seq1    ( n w --- ) like sequence, but does not move cursor; use after
+            sequence if want more than one number in a count
+\termio
+
+mem-display
+The Stacks:
+.       (i --- , displays and drops tos)
+u.      ( i --- , displays tos as an unsigned int & drops )
+.r      (i w --- , displays tos in a field w chars wide & drops )
+t.      ( displays top of temp stack; does not destroy it )
+?       ( addr --- , displays contents of addr as 32-bit int )
+s?      ( addr --- , displays contents of addr as 16-bit int )
+f?      ( addr --- , displays contents of addr as float )
+f.      ((f)a --- , displays and drops ftos )
+f.r     ((f)a w n --- , displays ftos in a field w chars wide, n decimals, 
+            & drops )
+
+Arrays:
+addr n dump         addr n adump            (dump ints)
+addr n bdump        addr n badump           (dump bytes)
+addr n cdump        addr n cadump           (dump as hex bytes and ASCII chars)
+addr n sdump        addr n sadump           (dump as shorts)
+addr n fdump        addr n fadump           (dump as floats)
+
+These list          These list
+array indices       absolute addresses
+NOTE THAT FOR A FORTH ARRAY arname, THE ADDRESS FOR THE ABOVE IS  0 arname
+\termio
+
+editor
+   Mirella has two independent but intertwined history systems.  One is
+similar to that of the C-shell, but using the character ^ instead of !. 
+The other is a sort-of-emacs-like command-line editor which allows the
+current or previous commands to be altered and then reused.  For details
+of the ^ history, see history.  The system is a slightly modified
+version of the one written for the WOLF interpreter by Robert H. 
+Lupton. 
+ 
+For the editor, the command you are currently typing may be edited, and
+any command listed by 'history' may be accessed, and those commands may
+be edited before re-use.  ^-symbols are expanded as soon as possible,
+and may then be edited.  The editing commands are :
+
+    ^A       Go to start of line        ^B       Go back one character
+    ^C       Interrupt (as usual)       ^D (or DEL on PC's) Delete character
+    ^E       Go to end of line          ^F       Go forwards a character
+    ^H       Delete previous character  ^I (TAB) Insert spaces to next tabstop
+    ^J (LF)  Send line to be executed   ^K       Delete to end of line
+    ^L       Redraw line                ^M (CR)  Send line to be executed
+    ^N       Get the next command       ^P       Get the previous command
+    ^T       Transpose with prev. char  ^U       Delete to start of line
+    ^O       Toggle overwrite/insert mode (normally insert)
+    BS (or DEL on ANSI terminals ) Delete previous character
+
+There are also parallel commands which operate on words, defined as
+whitespace delimited strings:
+
+    ESC-b    Go back one word		ESC-d    Delete to end of word
+    ESC-f    Go forward one word        ESC-h    Delete to start of word
+    ESC-u    Restore last word deleted (actually until a space is restored)
+
+Any other character is inserted before the cursor (unless overwrite has
+been set with ^O ).  The arrow keys work for ^B, ^F, ^N, and ^P on vt100
+lookalikes; the keypad will work on IBM-PCs (including ^<-, ^->) to skip
+over words, <ins> to do a ^T, and <home> and <end> to do ^A and ^E,
+<del> to do ^D.  
+\termio
+
+history
+   Mirella has a history feature similar to that in the C-shell, but using
+the character ^ instead of !.  It also has an emacslike history editor,
+which works closely with the ^-system.  See 'editor' for details.
+
+   'history' lists up to the the last eighty commands issued, giving 
+each an identifying number.  Each command can be re-used by referring to it
+by its number as ^nn, or by giving a unique abbreviation as ^abbrev.  As a
+special case, the previous command may be repeated as ^^ and the last word of
+the last command as ^$.  These symbols are white-space delimited, and are
+expanded as soon as possible.  For example a ^^ will be immediately replaced
+by the text of the previous command, and can be edited, and ^^<CR> will
+execute it.  To edit a command earlier than the immediately previous one,
+type ^nn<space> or ^abbrev<space> instead of ^nn<cr> or ^abbrev<cr>.
+
+   These commands are written to a file "history.sav" in the current 
+directory at the end of a session, and read from that file at the beginning
+of the next.  To frustrate this create a null file with no permissions in the
+current directory. To write this file at any point use the Mirella word
+write_hist; read_hist reads the last file.
+\termio
+
+

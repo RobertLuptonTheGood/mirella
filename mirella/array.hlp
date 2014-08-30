@@ -1,0 +1,79 @@
+arrays
+Arrays in Mirella can be char (c), short (s), int (n), or float(f). Since
+floats and normals are the same size, the creation code is the same.
+ARRAYS DECLARED FROM MIRELLA:
+ 
+        For all arrays, execution of   
+n  arname  
+        pushes the address of the nth elt.
+
+        To create arrays in the dictionary:
+nelt narray arname       (int)          or   
+nelt sarray arname       (short)        or  
+nelt carray arname       (char)
+
+        To create arrays in the heap:
+nelt nmarray arname    or   
+nelt smarray arname    or  
+nelt cmarray arname
+        All of these allocate a memory channel with the name of the array
+
+C ARRAYS:
+Explicitly declared C arrays can be installed with Minstall, and behave 
+the same way as Mirella arrays. Thus an array declared as
+    short int sarr[20];
+and minstalled as
+    v  sarr +sarr s 20         is a short int Mirella array with name sarr.
+
+Arrays allocated in C with malloc() or some such and assigned a DECLARED 
+POINTER in C, as 
+    short int *sarrp = (short int *)malloc(20*sizeof(short int)).....
+and minstalled as
+    c  sarrp  sarrp  p
+must be INSTALLED in Mirella to function as an array. The litany is
+    p' sarrp 20 scparray sarr   (or ncparray, or ccparray...
+
+    For STRUCTURES and arrays thereof, see structures. 
+\arrays
+array-arith
+There is code in Mirella for manipulating arrays arithmetically.  The words
+in all cases begin with n, s, or f and indicate the type of array(s)
+involved: n(ormal --ie long), s(hort int), or f(loat). 
+
+    addr n (n)(s)(f)arsum   pushes the (integer for n or s, float for f) 
+                            sum of the first n elements of the array at addr. 
+                            Note that the relevant address for a Mirella array
+                            arname is 0 arname.
+    
+    addr n (n)(s)(f)average fpushes the (float) AVERAGE of the first n elts.
+
+    addr1 addr2 n (n)(s)(f)aradd    Sums the two arrays in addr1 and addr2
+                            and puts the sum in addr2.
+
+    addr n ffac (n)(s)(f)arfmul     multiplies the array by the float constant
+                            ffac. For short arrays, does 12-bit integer arith-
+                            metic; for normals, does float conversion, and for
+                            floats, floating.
+
+    addr1 addr2 n ffac (n)(s)(f)arfaccum    accumulates the floating constant
+                            ffac times the array at addr1 into addr2.
+
+    addr n con (n)(s)(f)arcon   Adds the constant (integer for n,s, float for f)
+                            con to the array at addr.
+
+    addr n (n)(s)(f)amaxmin  (f)pushes the maximum, minimum, and indices for
+                            same on the (float) stack. The order is
+                            min max minindex maxindex, last on top; min and
+                            max are of course on the float stack for floating
+                            arrays.
+
+    addr n val (n)(s)(f)asolve  fpushes the interpolated index where the 
+                            interpolated array first is equal to val, which
+                            is an int for n,s, float for f. Not exquisitely
+                            well coded, but works.
+
+    addr findex (n)(s)(f)ainterp    (f)pushes the linearly interpolated
+                            value of the array at the float index findex.
+\arrays
+
+

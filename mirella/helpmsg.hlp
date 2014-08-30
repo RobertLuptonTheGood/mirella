@@ -1,0 +1,18 @@
+
+<******************** WELCOME TO MIRELLA *************************************>
+
+    For general help about the Forth system, type         mhelp
+
+    For help about the underlying C code, type            chelp
+
+    For help about the specific application, type         ahelp
+
+    For help about the C code for this application, type  achelp
+
+    For help about the help system, type                  hhelp
+
+    For this screen, type                                 help
+
+<****************************************************************************>
+
+\helpmsg

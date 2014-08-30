@@ -1,0 +1,101 @@
+/*This file is machine-generated and indexed. DO NOT MUCK WITH IT. AT ALL. */
+#if defined(MIRELIC)
+#  define NO_DECLS		/* don't include mireldecl.h */
+
+   void cspush();
+   int mprintf();
+#endif
+#ifdef VMS
+#  include mircintf
+#  include mirkern
+#else
+#  include "mircintf.h"
+#  include "mirkern.h"
+#endif
+/*
+ * C code from the .msc file
+ */
+/*b0.x*/
+/*e0.x*/
+
+/* #defines of MAXIFUN,  MAXIV */
+/*b1.x*/
+#define MAXIFUN  0
+#define MAXIV    0
+/*e1.x*/
+
+/* external declaration of functions */
+/*b2.x*/
+/*e2.x*/
+
+/* variable,constant list */
+/*b3.x*/
+/*e3.x*/
+
+#if MAXIFUN   /* if any functions, make array */
+static void 
+(*cfunc[MAXIFUN])() = {
+/* function list */
+/*b4.x*/
+/*e4.x*/
+};
+#else
+static void (*cfunc[1])();
+#endif /*MAXIFUN*/
+
+#if MAXIV
+static char *cvarr[MAXIV];
+#else
+static char *cvarr[1];
+#endif /*MAXIV*/
+
+/*
+ * Initialise the variables
+ */
+void
+m?setup0()
+{
+/*b5.x*/
+/*e5.x*/
+}
+
+/* code to cycle through all C-word definitions */
+static MIRCINTF cwords[] = {
+/*b6.x*/
+/*e6.x*/
+   { "", -1, 0, 0, 0, 0 },
+};
+
+MIRCINTF *
+next_cif?()
+{
+   static MIRCINTF *ptr = cwords;
+   if(*ptr->fname == '\0') return(NULL);
+   return(ptr++);
+}
+
+void
+m?setup(nvar,nfunc,varar,funcar,next_cif,init0,init1,init2,init3)
+int *nvar;				/* number of variables */
+int *nfunc;				/* number of functions */
+char ***varar;				/* array of variables */
+void (***funcar)();			/* array of function pointers */
+MIRCINTF *(**next_cif)();		/* defines C-interface */
+void (**init0)();			/* does variable setup */
+void (**init1)();			/* called before directory init */
+void (**init2)();			/* called after directory init */
+void (**init3)();			/* called just before out_intp */
+{
+   *nvar = MAXIV;
+   *nfunc = MAXIFUN;
+   *varar = cvarr;
+   *funcar = cfunc;
+   *next_cif = next_cif?;
+   *init0 = m?setup0;
+/*b7.x*/
+/*e7.x*/
+}
+
+/* push/pop stack code for functions */
+/*b8.x*/
+/*e8.x*/

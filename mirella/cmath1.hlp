@@ -1,0 +1,151 @@
+minimization
+Mirella has C function minimization routines using the downhill simplex
+method of Nelder and Mead; the code is adapted from Numerical Recipes
+
+double 
+amoeba(float **p,int ndim,float ftol,float (*funk)(),int *piter)
+    /* p is a matrix[ndim+1][ndim] which is initialized to the n+1 vectors 
+     *  of the starting simplex; at the end, any row is a solution.
+     *  ndim is the dimension of the space (number of parameters)
+     *  ftol is the fractional tolerance (try 2.e-6 for singles)
+     *  funk is the pointer to the function which you are trying to minimize;
+     *  it takes a float vector argument of length ndim.
+     *  piter is a pointer to the iteration number.
+     *  the function returns funk averaged over the final simplex.
+     */
+
+double 
+samoeba(float *x,float *dx,double (*funk)(),int nd)   
+    /* simple amoeba interface; x is the initial guess, dx the initial
+       deltas, one for each coordinate, funk the function, nd the dimension */
+\minimization
+
+array_arith
+normal 
+narsum(normal *buf,normal n)
+normal 
+sarsum(short int *buf, normal n)
+double 
+farsum(float *buf,normal n)
+    /* return the sum of the array buf of the indicated type, length n */
+double 
+naverage(normal *buf,normal n)
+double 
+saverage(short int *buf, normal n)
+double 
+faverage(float *buf, normal n)
+    /* return the float average of the array buf of the indicated type, len n*/
+void 
+naradd(normal *src,normal *dest,normal n)  
+saradd(short int *src, short int *dest, normal n);
+faradd(float *src, float *dest,normal n)
+    /* adds the array src to the array dest, length n */ 
+void 
+narfmul(normal *buf, normal n, float fac)  /* mpys buf by fac, full precision*/
+sarfmul(short int *buf,normal n,float fac) /* mpys buf by fac (to 12 bits)*/
+farfmul(float *buf,normal n,float fac)     /* mpys buf by fac */
+
+void 
+sarfaccum(short int *src, chort int *dest, normal n, float fac)  
+    /* mpys src by fac(12 bits), adds to dest */
+narfaccum(normal *src, normal *dest, normal n, float fac)
+    /* mpys src by fac(full prec), adds to dest */
+farfaccum(float *src, float *dest, normal n, float fac)
+    /* mpys src by fac, adds to dest */
+
+void 
+narcon(normal *buf, normal n, normal c)
+sarcon(short int *buf,normal n,normal c)
+farcon(float *buf, normal n, float c)
+    /* adds c to each element of buf */
+
+void 
+namaxmin(normal *buf,normal n,normal *pmin,normal *pmax,normal *pmindx,
+    normal *pmaxdx)
+samaxmin(short int *buf,normal n,normal *pmin,normal *pmax,normal *pmindx,
+    normal *pmaxdx)
+famaxmin(float *buf,normal n,float *pmin,float *pmax,normal *pmindx,
+    normal *pmaxdx)
+/* finds maximum and minimum and indices in the array buf; pmax and
+    pmin are pointers to variables in which are returned the max and min;
+    pmaxdx and pmindx pointers to the indices thereto */
+
+double 
+nasolve(normal *buf,normal n,normal value)
+sasolve(short int *buf,normal n,normal value)
+fasolve(float *buf,normal n,float value)
+  /* returns float index at which interpolated array buf first crosses
+    value; 0.0 if no solution. No assumption about monotonicity, not
+    very efficient. Does simple sequential search */
+
+normal
+nainterp(normal *buf,float findx)
+normal
+saintero(short int *buf,float findx)
+double
+fainterp(float *buf,float findx)
+    /* returns linearly interpolated value from array buf at float index findx
+
+void 
+sarbswp(short int *buf,normal n)  /*swaps the bytes in buf, length n shorts */
+
+void 
+narbswp(normal *buf,normal n)  
+                /*swaps the bytes, then the words, in buf, length n normals */
+                /* this should produce a Motorola/IBM long int stream from
+                a Dec/Intel one and vice versa */
+void
+naprt(normal *buf,normal n, char *titl)
+faprt(float *buf,normal n,char *titl)  
+saprt(short int *buf,normal n,char *titl)
+    /* prints array buf with title & numbers elements */
+\array_arith
+
+histograms
+Histogramming and analysis routines. Suppose have float data array data[],
+of size npt elements.
+
+void 
+initmask(char *mask,normal npt)
+        /* initializes the char array acceptance mask, whose entries are
+           1 for data you wish to accept, 0 for data you wish to reject in
+           any given analysis, to all 1's */
+int 
+setmask(float *specarr,char *mask,float llim,float ulim,normal npt)
+        /* set mask on basis of window in acceptance array specarr, which 
+        must have same indexing as data. i.e., mask[i] is 1 or 0 according
+        as specarr[i] is inside the limits llim, ulim, or outside.
+        returns number of accepted pts. */
+void 
+puthist(float q,normal *histarr,float cell,float origin,normal ncell)
+        /* drops entry q into histogram histarr, which has ncell cells
+           of width cell and origin (the MIDDLE of the first cell) origin*/
+void 
+clrhist(normal *histarr,normal ncell)
+        /* clears histarr */
+double 
+anhist(normal *histarr,normal ncell,float *qarr)   
+        /* analyzes the histogram histarr, finding quartiles, which it
+           stores in the float array qarr[3]. Returns the equivalent
+           gaussian standard deviation computed from the interquartile
+           range */
+void 
+makeder(float sigma,float *derarr,normal nder)   
+        /* calculates derivative of gaussian of standard deviation
+           sigma (expressed in cells) cut off smoothly at 3 sigma,
+           and stores values for argument 0,1,2,..nder in the array 
+           derarr  */
+double 
+foldder(normal j0,normal *histarr,normal ncell,float *derarr,normal nder)  
+        /* integrates the product of the histogram array histarr with the 
+           derivative of a gaussian generated by makeder with the center of the
+           gaussian derivative at cell j0. Used to find the mode, in */
+double 
+findmode(normal *histarr,normal ncell,float *derarr,normal nder)  
+        /* finds the mode of the histogram array histarr by convolution with
+           the derivative of a gaussian of appropriate width made by
+           makeder. Mode must be farther than nder cells from the end, or 
+           inaccurate results will occur, though we do the best we can */
+\histograms
+
+

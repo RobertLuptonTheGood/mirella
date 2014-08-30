@@ -1,0 +1,61 @@
+files
+Mirella has a unix-like interface to the filesystem. There is one file
+active for i/o at a given time, the CHANNEL. The index of the active
+channel is in the variable achan.
+
+fopenr
+fopenw
+fopenrw  ( i:name --- ch , opens name for, respectively, reading, writing, 
+            both, and pushes the channel number assigned to that file.)
+_fopen   ( addr mode --- ch , opens the file whose name is the string at addr,
+            in the mode mode (0-read,1-write,2-both), pushes channel number )
+close    ( ch --- , closes channel ch )
+fclose   ( i:name , closes file name )
+write    ( addr n --- , writes n bytes starting at addr to active channel )
+read     ( addr n --- , reads n bytes to mem starting at addr from active chan)
+flush    ( --- , flushes the i/o buffer for the active channel. Must do when
+            switching from read to write or vv for dual-mode files )
+seek     ( loc org --- seeks to loc bytes referred to org: 0 beginning,
+            1 current loc, 2 end; flushes buffer )
+tell     ( --- loc , reports location in file refereed to beginning )
+rewind   ( --- , sets file pointer to origin )
+showchan ( --- , displays open channels and locations )
+channel  ( ch --- , sets active channel to ch )
+rdeof    ( variable, true if last read encountered an end-of-file)
+bread    ( variable, number of bytes actually read in last read )
+
+Character i/o:
+fgetc    ( --- next_char , gets next character from active channel )
+fputc    ( char --- , writes char to active channel )
+fgets    ( addr maxcnt ---), reads the next newline-delimited string into addr
+            newline (and cr if it is there) are stripped; reads at most 
+            maxcnt chars, but string is always null-terminated.
+fputs    ( addr --- , writes the string at addr
+            to the active channel, terminating it with '\n' or '\r\n'
+            as is appropriate to the operating system. )
+puteol   ( writes a line terminator to the active channel ('\n' or '\r\n' )
+
+For TAPES, see tape
+\files
+
+tape
+Mirella has a facility for handling tape i/o if your system supports tapes:
+
+Reading/writing/open words are same as for files (see fileio). Special
+tape words are
+
+rewind      ( --- , if the active channel is a tape, rewinds the tape )
+jump        ( nfile --- , skips nfile files )
+rskip       ( nfile --- , skips nfile files backwards )
+tfwd        ( nrec --- , skips nrec records )
+tback       ( nrec --- , backspaces nrec records )
+end-file    ( --- , writes a filemark )
+tposition   ( --- , positions head between filemarks at EOV )
+retension   ( --- , retensions quarter-inch cartridge tapes )
+tfileno     ( variable which is the value of the current file; not
+                reliably implemented in all systems--if you tfwd or tback
+                across filemarks in unix systems, all is lost )
+\tape
+
+
+

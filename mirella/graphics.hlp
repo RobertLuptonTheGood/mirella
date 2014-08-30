@@ -1,0 +1,232 @@
+plots
+Mirella supports a Mongo-like line graphics facility for all its graphics
+modes. See also the drawing help entry for primitive functions.
+
+fxl fxh nxdiv xscale        sets scales to span first two values and
+fyl fyn nydiv yscale        sets number of divs. ndiv=0 evokes a nicelimits
+                            routine, ndiv<0 sets logarithmic axes flag
+gframe                      Draws a frame and numbers axes. Must set
+                            xscale and yscale first. Uses 'reasonable' 
+                            defaults; see custom_plots for options
+fxs fyx spenmove            Moves the virtual pen to fxs, fys
+fxs fys sdraw               Draws a line to scaled fxs,fys from prev point. 
+                            Line type, weight and drawing style determined
+                            by lweight, ltype, and mode (points,lineconnect,
+                            histogram).
+fxs fxy spoint              plots a plotting symbol at fxs, fys.
+points                      sets plotting mode to plot symbols at the data pts.
+    ns gssize               sets symbol size to ns/100 of vertical graph size
+    npt gspoints            sets plotting symbol to be an npt-gon or npt-pt star
+    gsempty                 sets plotting symbol to be an empty npt-gon
+    gsstar                  sets plotting symbol to be an npt-pt star
+    gsfill                  sets plotting symbol to be a filled npt-gon
+    gsupright               (default)plots symbol with a vertex up
+    gsinvert                plots symbol rotated 1/2 symmetry angle from above
+lineconnect                 sets plotting mode to draw straight line of linetype
+                            thru plotting points
+histogram                   sets plotting mode to connect points in histogram
+                            fashion; move half horiz incr. horizontally, vert
+                            incr. vertically, then rest of horiz incr. horiz.
+xar yar n ffgraph           Plots n-pt arrays yar vs xar, of the 
+          ssgraph           indicated types (f=float,s=short,n=integer)
+          nsgraph  
+yar n ngraph                Plots n-pt yar versus index, various types
+      sgraph
+      fgraph          
+str xlabel
+    ylabel                  Labels the axes
+cfa n fxl fxh nxdiv grafunc Graphs the arbitrary function whose cfa is cfa;
+                            the fn is expected to take and leave one float arg.
+                            n is the # pts; fxl fxh nxdiv are args for xscale
+fxs fys str label           Places label str at fxs, fys (scaled coordinates)
+fx fy str flabel            Places label str at fx, fy (fractions of plot box
+                            size) These are influenced by g_angle and g_magn
+xf xtod -> xi               pushes pixel x,y value corresponding to scaled
+yf ytod -> yi               xf, yf
+g_angle                     Float Mirella variable for position angle of strings
+g_magn                      "     "       " for magnification. 1.0 is "normal";
+                            tall letters are 5% of vertical graph height
+\graphics
+
+custom_plots
+    CUSTOMIZING THE 'GFRAME' FUNCTION FOR SPECIAL NEEDS
+
+gframe normally creates a publication-style graph with 'pleasing' aspect
+ratios and axis numbering. If you want/need something else, these options
+exist: (you may, of course, do anything with the drawing primitives)
+
+g_stdflg        M. variable; if 1, std graph; if 0, following variables
+                    are active:
+    g_xls
+    g_xhs
+    g_yls       corners of plotting area, as (float) fractions of total size
+    g_yhs           of graph:  0.0 <= g_xls < g_xhs < 1.0 ; same for y
+    g_numflg    flag, nonzero if want numerical labels on axes; if so,
+    g_syxnum    y value (fraction of ysize) at which x numbers to be written
+    g_yvflg     flag, nonzero if want y numbers written vertically
+    g_sxynum    x value (fraction of xsize) at which y numbers to be written
+
+and two variables which control the format of the axis numbers:
+g_xdec
+g_ydec
+which set the number of decimal digits after the decimal pt. There is
+an algorithm in numlabel() which normally displays about 4 significant
+figures if these variables are negative; if 0 or positive, they determine
+the number of figures after the dp; if 0, displayed as integers.
+    
+standardgraph
+
+returns you to the default setup
+\graphics
+
+bitmaps
+Mirella supports a full set of bit-mapped graphics primitives. 
+
+    BIT-MAPPED GRAPHICS MEMORY ALLOCATION AND MANIPULATION:
+
+bgraph (nobgraph)
+    Specifies that a bitmap will (not) be created in the next graph
+    allocated by allocgraph. Both bitmap and vector mode may be on at once.
+xsize ysize n allocgraph  
+    Allocates a xsize X ysize bitmap and assigns it graphics channel n, which
+    is selected as the current channel.
+n setgraph
+    selects channel n. 
+n freegraph
+    frees the memory for channel n
+egraph
+    erases (zeros) the current graph
+showgraphs
+    displays the currently allocated channels, sizes, and pointers
+Gchan
+    Mirella const = current channel. 
+outgraph filename
+    writes the bitmap data for the current graph bitmap to a file. The
+    code expects an extension '.grp' (or none; '.grp' is added)
+n ingraph filename 
+    reads the bitmap data from filename into graph n; if graph n is open,
+    overwrites it after querying you.
+
+    MANIPULATING WHOLE BITMAP GRAPHS
+
+x0 y0 xsize ysize n exgraph
+    extracts a graph of size xsize ysize at corner x0 y0 from current graph
+    and puts it in graph channel n, which it allocates and sets.
+x0 y0 n insgraph
+    inserts the current graph into graph n at corner x0 y0
+\graphics
+
+vector-graphics
+Mirella supports a full set of vector-list graphics primitives. 
+
+    VECTOR-LIST GRAPHICS MEMORY ALLOCATION AND MANIPULATION:
+
+vgraph (novgraph)
+    Specifies that a vector list will (not) be created in the next graph
+    allocated by allocgraph. Both bitmap and vector mode may be on at once.
+xsize ysize n allocgraph  
+    Allocates a xsize X ysize graph and a nominal vector buffer and 
+    assigns it graphics channel n, which is selected as the active channel.
+n setgraph
+    selects channel n. 
+n freegraph
+    frees the memory for channel n
+egraph
+    erases (zeros) the current graph
+showgraphs
+    displays the currently allocated channels and sizes
+Gchan
+    Mirella const = current channel.
+outvector filename
+    writes the vector list data for the current graph list to a file. The
+    code expects an extension '.gvc' (or none; '.gvc' is added)
+n invector filename
+    reads the vector data from filename into graph n; if graph n is open,
+    overwrites it after querying you.
+drawlist
+    draws the current list to the screen; the word 'drawit' may be defined
+    to do this in a transparent way on your system.
+bdrawlist
+    creates a bitmap from the current vector list in the current graph.
+\graphics
+
+drawing    
+    DRAWING AND POINTS  ( all x, y pixel coordinates; 0 0 is lower left)
+ltype       
+    variable to specify linetype: 0:contin.,1:dotted,2:short dash; 3:long dash
+lweight
+    variable to specify line width: 1:single pix; 2:2 pix, 3:3 pix
+x y penmove
+    moves the virtual pen to x,y.
+x y rdraw
+    draws a line from the current pen position to x y; single pix wide, cont.
+x y ldraw
+    draws a ltype, lweight line to x,y from the current pen position.
+x y gpoint
+    places a point at x y; size determined by lweight.
+G_xold, G_yold
+    Mirella constants containing the current pen position.
+See also  plots  for drawing in scaled coordinates.
+\graphics
+
+strings
+    STRINGS
+str fangle fmagn gstring
+    draws the string str at the current pen position, magnification fmagn,
+    angle to the horizontal fangle.(fmagn =1.0 -> tall letters 3.2% of scr. ht.)
+str fangle fmagn gstrlen
+    pushes the length of the string in pixels
+see also   plots   for labeling functions which handle most normal string needs.
+\graphics
+
+bitmap_output
+    OUTPUT ROUTINES, some very device-specific
+
+outgraph filename
+    writes the current graph bitmap with a standard size header to file filename
+n ingraph filename
+    reads the bitmap in filename into channel n.
+    SEE THE VECTOR ANALOGUES IN VECTOR_GRAPHICS
+x0 y0 g>screen
+    writes the current bitmap, starting at corner x0 y0 to graphics display
+dx dy movescreen
+    pans the display screen by dx dy half-screenwidths over the current graph
+c>screen
+    centers current graph smaller than the screen in the screen; centers the
+    screen in larger graphs. On PC systems, the arrow keys are enabled to
+    allow panning in the graph.
+r>screen
+    reduces current graph to size of screen and displays
+gers
+    erases the graphics display; NOT the bitmap.
+writegraph filename
+    writes the current graph to filename in a form suitable for output
+    to a printer (current implementation for LQ1500 dotmatrix printer)
+\graphics
+
+nuts_and_bolts
+    ESOTERICA
+G_xsize, G_ysize
+    Mirella constants containing the xsize and ysize of the current graph.
+G_xbsize
+    M. const containing the x array size in bytes. 
+i j mgraph 
+    pushes address of bitmap byte j in line i
+
+The Mirella bitmaps are normally stored high bit left, bytes left to right,
+first line bottom. They are normal Mirella byte matrices (see matrices). In
+some systems (eg the VAXSTATION) the hardware demands other formats; except
+for the issue of the portability of .grp files, the format is usually of
+no concern.
+
+gpointer
+    M. const containing pointer to body of graph, mgxbize X mgysize byte array
+j mvgraph 
+    pushes address of vector j in vector list. Format of vectors is
+        short int x
+        short int y
+        unsigned char color  ( 0 pen up, vlt entry (0xff) pendown )
+        unsigned char filler (does nothing now)
+\graphics
+    
+

@@ -1,0 +1,180 @@
+#define Expect_CM 39
+\Expect typeless == 11
+\Expect no_size == 0
+#include <minstall.def>
+{
+   #include "images.h"
+   #define HEADER_P ((HEADER *)NULL)
+}
+c	Maxpbuf		maxpbuf			i
+c	Nbuf		pbuffer			i
+v	pbufs		+pbufs			*n 8
+c	Pbuf		pbuf			n
+c       Pbufd           pbufd                   n
+c	_display	display			n   
+v	pic		++pic			s 1024 1024
+v       bpic            ++bpic                  c 1024 1024
+v       npic            ++npic                  i 1024 1024
+v       fpic            ++fpic                  f 1024 1024
+v       picd            ++picd                  s 1024 1024
+v       bpicd           ++bpicd                 c 1024 1024
+v       npicd           ++npicd                 i 1024 1024
+v       fpicd           ++fpicd                 f 1024 1024
+v	xsize		xsize			i   
+v	ysize		ysize			i   
+v       xsized          xsized                  i
+v       ysized          ysized                  i
+\ we need to put in all the different sizes, but cannot use the #definitions;
+\ minstall is not smart enough (may be impossible)
+\
+f	picbuffer	picbuffer		i
+f	pballoc		pballoc			i i i
+f       bpballoc        bpballoc                i i i
+f       fpballoc        fpballoc                i i i
+f       npballoc        npballoc                i i i
+f	pbfree		pbfree			i
+p       setptr          plptr                               \ jeg0407
+c	Dltable		dltable			n
+p	dsp_setdlt	dsp_setdlt
+f       qdsp_setup      qdsp_setup              i
+p	showpbuffers	showpbuffers
+f       isokbuf         isokbuf                 i
+f       isacbuf         isacbuf                 i * i
+c	Filval		filval			f
+c	Illval		illval			i
+p       plptr           plptr  
+f       gplptr          gplptr                  i
+p       splptr          splptr
+p       bplptr          bplptr
+p       nplptr          nplptr
+p       fplptr          fplptr
+p       pclear          pclear
+f       seldest         seldest                 i
+f       selqdest        selqdest                i
+f       gpdest          gpdest                  i i
+f       pdest           pdest                   i
+f       bpdest          bpdest                  i
+f       spdest          spdest                  i
+f       npdest          npdest                  i
+f       fpdest          fpdest                  i
+f       pchange         pchange                 i i i
+f       bpchange        bpchange                i i i
+f       spchange        spchange                i i i
+f       npchange        npchange                i i i
+f       fpchange        fpchange                i i i
+\ Structure offsets
+o	_header		pbuf->_header
+o	_pbsize		pbuf->_pbsize
+o	_picorig	pbuf->_picorig
+o	_pline		pbuf->_pline
+o	_scr		pbuf->_scr
+o	_app		HEADER_P->app
+o	_filedate	HEADER_P->_filedate	s
+o	_bitpix		HEADER_P->_bitpix
+o	_xsize		HEADER_P->_xsize
+o	_ysize		HEADER_P->_ysize
+o	_zsize		HEADER_P->_zsize
+o	_pfname		HEADER_P->_pfname	s
+o	_decorder	HEADER_P->_decorder
+\
+\ Display words
+\
+v	wxsize		wxsize			i
+v	wysize		wysize			i
+v	wxoff		wxoff			i
+v	wyoff		wyoff			i
+c	Dxsize		d_xsize			i
+c	Dysize		d_ysize			i
+p	dspinit		dspinit			v % i
+p	_dspopen	dspopen			v % i \ x11.c version takes x string
+p       dspg1open       dspg1open               v % i
+p       dspg2open       dspg2open               v % i
+f       set_ncol        set_ncol                i
+p       gvlt1           x11_gvlt1               
+p       gvlt2           x11_gvlt2               
+f       dsp_image       dsp_image               p i i i i % i
+f       dsp_bimage      dsp_bimage              p i i i i % i   \ these jeg0407
+f	dspzoom		dsp_zoom		i i i % i
+p	qq		qq
+p       qql             qql
+o	_xoff		display->_xoff
+o	_yoff		display->_yoff
+o	_dxlow		display->_dxlow
+o	_dxhigh		display->_dxhigh
+o	_dylow		display->_dylow
+o	_dyhigh		display->_dyhigh
+o	_wxcen		display->_wxcen
+o	_wycen		display->_wycen
+o	_wzoom		display->_wzoom
+o	_dmode		display->_dmode
+o	_zoom		display->_cnum
+o	_cnum		display->_cnum
+o	_cden		display->_cden
+o	_wrapflg	display->_wrapflg
+o	_zorg		display->_zorg
+o	_zrng		display->_zrng
+o	_bufno		display->_bufno
+o	_dpfname	display->_dpfname	s	
+\
+v	conv_dlt_to_dsp	conv_dlt_to_dsp		i
+f	zz		zz			i i
+f	xyc		xyc			i i
+f	xycorn		xycorn			i i
+p	z?		zquestion			
+p	mtv		mtv			
+p	find_extreme	find_extreme
+p	gflush		gflush
+\
+\ cursor words
+\
+p	cursor		cursor		
+c	curs		curs			n
+p	cenwin		cenwin
+v	c_xs		curs->_xs		i   
+v	c_ys		curs->_ys		i   
+v	c_marker	curs->_cmarker		i
+c	c_disp		curs->_cdisp		p
+v	c_val		curs->_cval		i
+v	cursor_key	cursor_key		i
+f	ers		dsp_erase
+f       stod            stod                    i i p p
+#if IM_DISPLAY == x11
+#define Expect_CM Expect_CM + 12
+v	fix_openwindows_bug	fix_openwindows_bug	i
+f	templine	x11_templine		i i i i
+f       putcur          x11warpcursor           i i
+f       dsp_draw        x11line                 i i i i
+f       dsp_point       x11point                i i
+p	dspclose	x11close
+p	xegraph		x11erase_graph
+s	x11_arg_string	x11_arg_string		c
+f	x11set_lookup	x11set_lookup		p p p i * i
+p       x11redraw       x11redraw
+f	set_cursor	x11set_cursor		i
+p	toggle-blinkflag	toggle_blinkflag
+p	toggle-cursor-window	x11_toggle_cursor_window
+p	toggle-name-window	x11_toggle_name_window
+f       name-window     x11_name_window         i
+f       cursor-window   x11_cursor_window       i
+p	scroll-lookup	x11_scroll_lookup
+f	stretch-lookup	x11stretch_lookup	i i
+v	stretch_bottom	stretch_bottom		f
+v	stretch_top	stretch_top		f
+v	fix_openwindows_bug	fix_openwindows_bug	i
+c       curs_alt        curs_alt                i
+c       Xpalheight      xpalheight              i
+#else
+p	dspclose	dspclose		v % i
+#endif
+f	dspprint        dspprint		p % i
+f	setdporig       setdporig		i i
+p       getdporig       getdporig
+f       dspput          dspput                  i
+f       dspgetc         dspgetc                 * i
+f       dspgets         dspgets                 p 
+#if IM_DISPLAY == vga
+v	dosmouse	dosmouse		i
+#  include "vga.msc"
+#endif
+#define Expect_CM 39
+\Expect (C != M) == Expect_CM

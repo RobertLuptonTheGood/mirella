@@ -1,0 +1,41 @@
+\    test stuff for vga
+#if IM_DISPLAY == vga
+#define Expect_CM Expect_CM + 3
+p	toggle-blinkflag	toggle_blinkflag
+p	toggle-overlay		toggle_overlay
+p	toggle-point-cursor	toggle_point_cursor
+#endif
+#if M_OPSYS == pl386dos && defined(VGADEBUG)
+\ this stuff can only be minstalled if vga.c is compiled with VGADEBUG #defined
+v    vga_mode        vga_mode               i
+f    wrbline         wrbline                i i i p
+f    rdbline         rdbline                i i i p
+f    rdpline         rdpline                i i i p
+f    atipage         atipage                i 
+f    aticonfig       aticonfig              * i
+v    vpagel          +vpagel                c 800
+v    vpagep          +vpagep                s 800
+v    valptr          +valptr                p 800
+f    atiline         atiline                i * i
+v    ati_plane       ati_plane              i
+f    from_pal        from_pal               p
+v    vltc            +vltc                  c 768
+v    vltd            +vltd                  c 768
+v    vlttext         +vlttext               c 768
+f    dspread         dspread                p
+f    dspwrit         dspwrit                p
+f    getdspblk       getdspblk              p i i i
+f    putdspblk       putdspblk              p i i i
+f    greyset         greyset                i i i
+p    restore_pal     restore_pal
+f    setup_pal       setup_pal              p
+c    memimage        memimage               p
+v    mempimage       +mempimage             p 4
+c    Dmemsize        dmemsize               i
+c    paltable        paltable               p
+f    gwrpline        gwrpline               i i i p i
+f    gwrbline        gwrbline               i i i p i
+f    gwrbpline       gwrbpline              i i i p i
+f    gwrppix         gwrppix                i i i i
+f    rdppix          rdppix                 i i * i
+#endif

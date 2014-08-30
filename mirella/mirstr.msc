@@ -1,0 +1,6 @@
+#include <minstall.def>
+\Expect (C != M) == 0
+\Expect typeless == 0
+\Expect no_size == 0
+I2	load_font
+s	def_font	def_font	c

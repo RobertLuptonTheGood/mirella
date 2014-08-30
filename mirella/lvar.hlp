@@ -1,0 +1,19 @@
+local_vars
+Mirella supports local static variables within colon definitions.
+The defining sequence for a varable xx is
+
+lvar xx
+
+which can occur anywhere within a colon definition; after it is defined,
+xx can be referenced as can any variable; e.g.
+
+4.5 xx f!    xx f@ sin   5 xx !  xx  ?    etc, etc.
+
+The name xx redefines any existing global variable of the same name
+within the parent colon definition, but the dictionary entry disappears
+after the terminating ; of the parent definition, and the local variable
+cannot be referenced from outside. Its VALUE is static, and if a value is
+stored in one invocation of the parent, it is still there in the next
+invocation.
+\local-vars
+

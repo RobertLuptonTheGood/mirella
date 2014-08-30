@@ -1,0 +1,72 @@
+editor
+   Mirella has two independent but intertwined history systems.  One is
+similar to that of the C-shell, but using the character ^ instead of !. 
+The other is a sort-of-emacs-like command-line editor which allows the
+current or previous commands to be altered and then reused.  For details
+of the ^ history, see history.  The system is a slightly modified
+version of the one written for the WOLF interpreter by Robert H. 
+Lupton. 
+ 
+For the editor, the command you are currently typing may be edited, and
+any command listed by 'history' may be accessed, and those commands may
+be edited before re-use.  ^-symbols are expanded as soon as possible,
+and may then be edited.  The editing commands are :
+
+    ^A       Go to start of line        ^B       Go back one character
+    ^C       Interrupt (as usual)       ^D (or DEL on PC's) Delete character
+    ^E       Go to end of line          ^F       Go forwards a character
+    ^H       Delete previous character  ^I (TAB) Insert spaces to next tabstop
+    ^J (LF)  Send line to be executed   ^K       Delete to end of line
+    ^L       Redraw line                ^M (CR)  Send line to be executed
+    ^N       Get the next command       ^P       Get the previous command
+    ^T       Transpose with prev. char  ^U       Delete to start of line
+    ^O       Toggle overwrite/insert mode (normally insert)
+    BS (or DEL on ANSI terminals ) Delete previous character
+
+There are also parallel commands which operate on words, defined as
+whitespace delimited strings:
+
+    ESC-b    Go back one word		ESC-d    Delete to end of word
+    ESC-f    Go forward one word        ESC-h    Delete to start of word
+    ESC-u    Restore last word deleted (actually until a space is restored)
+
+And two commands which invoke the buffers of the screen handler:
+    ESC-l    Restore the last Mirella screen
+    ESC-p    Restore the last help screen, if any
+
+Any other character is inserted before the cursor (unless overwrite has
+been set with ^O ).  
+
+The arrow keys work for ^B, ^F, ^N, and ^P on vt100
+lookalikes; the keypad will work on IBM-PCs (including ^<-, ^->) to skip
+over words, <ins> to do a ^O, and <home> and <end> to do ^A and ^E,
+<del> to do ^D.  
+
+On ANSI terminals with vt100-like keypads, the keypad is mapped to look like
+the IBM AT keypad; ie PF1 = ESC, 8= uparrow, 2 = downarrow, 6 = rightarrow,
+4 = leftarrow, 7 = <home> = ^A, 1 = <end> = ^E, 0 = <ins> = ^O, . = <Del> = ^D
+\termio
+
+history
+   Mirella has a history feature similar to that in the C-shell, but using
+the character ^ instead of !.  It also has an emacslike history editor,
+which works closely with the ^-system.  See 'editor' for details.
+
+   'history' lists up to the the last eighty commands issued, giving 
+each an identifying number.  Each command can be re-used by referring to it
+by its number as ^nn, or by giving a unique abbreviation as ^abbrev.  As a
+special case, the previous command may be repeated as ^^ and the last word of
+the last command as ^$.  These symbols are white-space delimited, and are
+expanded as soon as possible.  For example a ^^ will be immediately replaced
+by the text of the previous command, and can be edited, and ^^<CR> will
+execute it.  To edit a command earlier than the immediately previous one,
+type ^nn<space> or ^abbrev<space> instead of ^nn<cr> or ^abbrev<cr>.
+
+   These commands are written to a file "history.sav" in the current 
+directory at the end of a session, and read from that file at the beginning
+of the next.  To frustrate this create a null file with no permissions in the
+current directory. To write it in the middle of a session (which is useful
+for the creation of scripts from keyboard sequences), say 'write_hist'.
+\termio
+
+

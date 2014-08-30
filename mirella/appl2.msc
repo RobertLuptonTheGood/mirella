@@ -1,0 +1,10 @@
+v    greeting        +greeting             c   40       
+s    greetstr        +greeting             c   
+v    structvar       nstruct.st3           n   
+c    structcon       nstruct.st2           n   
+s    structstr       nstruct.nname         n   
+p    test1           test1                
+p    test2           test2                
+
+
+

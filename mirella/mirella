@@ -1,0 +1,4 @@
+# mirella shellscript, makes new dictionary
+MIRELLADIR=/home/jeg/mirella/mirella
+$MIRELLADIR/cmirella  $MIRELLADIR/newdic $MIRELLADIR/startup $* -
+exec $SHELL

@@ -1,0 +1,35 @@
+signals
+SIGNALS:
+Mirella normally traps the signals handled by the C signals facility,
+namely
+    SIGINT
+    SIGILL
+    SIGIOT
+    SIGEMT
+    SIGSEGV
+    SIGBUS
+    SIGFPE
+and does an erret to the outer interpreter after issuing an error 
+message describing the fault. You may wish to disable this in order
+to get a stack unwind (in VMS) or a core dump (in unix), and there is
+a facility to do so. The constants defined in signal.h are known to
+Mirella, and 
+    SIGINT setsigdfl
+sets the default system response to SIGINT; to turn off ALL the
+signal catching, say
+    -1  setsigdfl
+This facility does not exist at present in DSI systems.
+INTERRUPTS:
+The ^C interrupt signal is special; its handler normally only sets
+an integer variable which causes the NEXT execution of the word 
+    pause
+to execute an erret to the outer interpreter. In systems with a true
+signal handler (unix, vms) hitting ^C more than 4 times will dump you
+back to the Mirella prompt no matter whether you catch 'pause' in your
+code (or dopause() in your C code) or not. If you want something more
+graceful than an immediate return to the outer interpreter in Mirella
+code, the word 
+    ifpause
+merely returns TRUE (-1) if ^C has been struck, FALSE(0) otherwise.
+
+\signals

@@ -1,0 +1,60 @@
+\Expect (C != M) == 10
+\Expect typeless == 4
+\Expect no_size == 0
+#include <minstall.def>
+{
+	#include "mapp.h"
+}
+I1	applinit
+I2	oldd_init
+v	iarrp		iarrp			p
+p	ftimes		ftimes
+p	ppower		ppower
+f	power		power			f i * f
+f	hello		hello			i
+f	puttogether	puttogether		s s * s
+p	_puttogether	_puttogether
+v	iarr		+iarr			i   100
+v	shiarr		+shiarr			s   100
+v	chararr		+chararr		c   100
+v	farr		+farr			f   100
+v	shiarrp		shiarrp			p
+v	chararrp	chararrp		p
+v	farrp		*farrp			f
+v	+strucar	+strucar		n   10
+o	strucar_x	strucar->x
+o	strucar_y	strucar->y
+o	ffs		strucar->ff                  \ aaarghhh!!! was `ff'
+o	name		strucar->name
+v	strucarp	strucarp		p
+c	Sizmix		Sizmix			i
+v	imatrx		++imatrx		i   12 17
+c	area		area			p
+v	floatvar	floatvar		f     \ float variable
+c	cfloat		floatvar		f
+v	intvar		intvar			i
+c	cint		intvar			i
+\ make a new vocabulary and then switch back to forth
+V	greetvoc
+v	greeting	+greeting		c 40
+s	greetstr	greeting		c
+F	forth
+v	structvar	nstruct.st3		n
+c	structcon	nstruct.st2		n
+s	structstr	nstruct.nname		n
+p	test1		test1
+p	test2		test2
+p	test3		test3
+p	test4           test4
+p	test5		test5
+p	test6           test6
+p	test7		test7
+p	test8           test8
+p	test9		test9
+p	test10          test10
+\ f@	dyn1		dyn1			i * i
+\ p@	hi		hi
+p       dspinit         dspinit
+p       dspopen         dspopen
+p       dsp_setdlt      dsp_setdlt
+f       flims           flims                   f f p p * i

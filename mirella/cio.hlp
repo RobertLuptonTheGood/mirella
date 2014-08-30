@@ -1,0 +1,180 @@
+file_utils
+FILE *
+mcfopen(char *fname,char **np)   
+                    /* opens textfile fname for reading in current dir if 
+                    exists; if not in Mirella dir; np is a pointer to a 
+                    pointer to the name actually opened; if np is zero, 
+                    nothing is returned there. fname is a cstring. */
+FILE *
+mcfopenb(char *fname,char **np)   
+                    /* opens fname for binary reading in current dir if exist;
+                    if not, in Mirella dir; in Unix systems, these fns are 
+                    identical. fname is a cstring. */
+
+char *
+baseptr(char *s) /* rets pointer to the basename of the filename s */
+
+int 
+hasdir(char *s)  /* rets 1 if s is a filename with a prepended dir */
+
+char *  
+extptr(char *s)   /* rets pointer to extension if s contains a '.' followed 
+                    by a char after directory separators if any; rets 0
+                    if file has no extension */
+
+char *
+extchk(char *fname,char *ext,char *filename)  
+                  /* checks fname for extension ext. (no '.') if no extension,
+                    appends ext; if otherwise, asks user for guidance. returns 
+                    fixed-up name in filename */
+\files
+
+forth_io
+void
+emit(char c)     /* outputs one character through Mirella terminal output.*/
+
+void
+flushit()         /* flushes Mirella terminal output; then flushes stdout */
+
+void 
+cprint(char *str)  /* prints c strings on Mirella terminal output */
+                    
+void 
+mprintf(args)     /* like printf() but outputs thru Mirella terminal output*/
+
+int
+expect(char *addr,normal count)  
+                /* gets string from Mirella terminal input, invoking command
+                   line editor. count is max count; returns actual count */
+\term_io
+
+raw_input
+int
+get1char(code)
+        /* raw getchar. If argument is 1, just sets raw mode in systems where
+        that can be done, noop in others; if argument is EOF (-1) resets
+        cooked mode; again noop in systems which do not have modes. If arg
+        is 0, gets a raw char; for occasional use, each invocation with arg
+        0 sets and resets raw mode. OK but inefficient; for extended use
+        use get1char(1) and get1char(EOF) at beginning and end of session.
+\term_io
+
+m_filesystem
+The native Mirella filesystem has a C interface which can always and sometimes
+should be used in C code: its global variables are
+normal 
+achan,    /* Mirella achan; active channel */
+nread,    /* Mirella bread; bytes read. can check for error or eof */
+rdeof,    /* Mirella rdeof; flag 0 unless eof encountered */
+mterr,    /* Mirella mterr; tape error register*/
+mtresid,  /* Mirella mtresid; tape residual count */
+tfileno;  /* Mirella tfileno; tape file number */
+
+and functions:
+
+normal
+mopen(char *name,int mode)        returns the channel number. opens or creates
+                                    as appropriate, binary mode if appropriate
+void
+mclose(normal i)                  closes channel i
+normal
+mseek(normal pos,normal org)      seeks to pos relative to org in active 
+                                    channel,returns position
+normal 
+mtell()                           returns position in active channel
+void
+mchannel(normal i)                sets active channel to i
+mread(void *addr,normal nby)      reads nby bytes from active channel to addr
+mwrite(void *addr,normal nby)     writes nby bytes to active channel from addr
+desi(normal i)                    returns descriptor(if any) for channel i; 
+                                    returns -1 if channel is a special device 
+                                    with no OS descriptor.
+frewind()                         rewinds the current channel
+bflush()                          flushes current channel
+normal 
+mfgetc()                          gets one char from the current channel
+void 
+mfungetc(char c)                  ungets one char from current channel if poss
+void
+mfputc(char c)                    outputs one char to current channel
+char *
+mfgets(char *s,normal n)          gets an EOL or EOF-term string or first n
+                                    chars from current channel; string is
+                                    null-term, no EOL; rets argument or 0 
+                                    if at EOF.
+void
+puteol()                          writes an EOL to the current channel
+int
+mfputs(char *s)                   writes string s to current channel and
+                                    writes EOL. returns # written.
+
+These functions should be used in any code which leaves files open
+upon return to the Mirella environment.
+\files
+
+ansi_utils
+ANSI SCREEN CODE:
+int x_scur;     globals for screen coordinates from last or for next
+int y_scur;     call to ansi screen functions.
+void 
+get_scur()      /* gets cursor position, puts in x_scur, y_scur */
+void 
+put_scur()      /* puts cursor at x_scur, y_scur */
+void 
+home_scur()     /* homes cursor */
+void 
+sav_scur()      /* saves cursor position internally (in terminal buffers) */
+void 
+res_scur()      /* restores it */
+void 
+erase_line()    /* erases from cursor to end of line */
+void 
+clear_scr()     /* clears screen, leaves cursor at top left */
+void 
+num_keypd()     /* sets keypad to numeric mode */
+void 
+app_keypd()     /* sets keypad to 'application' mode */
+\term_io
+
+large_files
+LARGE BINARY FILES:
+Mirella has facilities in C for handling large binary files which systems
+may or may not handle efficiently with their default runtime C libraries.
+In the DSI32 system, for example, buffers larger than about 32000 bytes
+are not supported, and in VMS the stream facility is abominably inefficient
+for large files. The code implementing the following functions varies from
+system to system, but is transparent to the user. To ensure portability,
+writes and reads should always mirror each other exactly; ie if you
+
+writeblk(fdes,buf1,100);
+writeblk(fdes,buf2,16);
+
+always recover the data with the same sequence of reads:
+
+readblk(fdes,buf3,100);
+readblk(fdes,buf4,16);     OK? in unix it doesn't matter; in VMS it does.
+
+normal
+creatblk(char *filename,int mode)
+    /* creates a binary file in mode mode (0=readonly, 1=writeonly,
+    2=readwrite for subsequent readblk()s and writeblk()s; returns int
+    file descriptor */
+normal
+openblk(char *filename,int mode)
+    /* opens an already creatblk()'d file in mode. returns descriptor */
+normal
+readblk(int fdes,char *buffer,normal nbyte)
+    /* reads nbyte chars from file with desc fdes into buffer; returns
+       number of bytes actually read */
+normal
+writeblk(int fdes, char *buffer, int mode)
+    /* writes nbyte chars from buffer to file with desc fdes; returns
+    number of bytes actually written */
+
+these files can be maneuvered in with lseek() and interrogated with tell(),
+but the values may or may not be what you had in mind; for portability,
+only lseek() to places reported by tell(), which may be on record boundaries.
+The normal Mirella files are stream files on all systems, and do not suffer
+from these problems.
+\files
+

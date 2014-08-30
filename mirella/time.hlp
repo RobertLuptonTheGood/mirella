@@ -1,0 +1,23 @@
+time
+Mirella has a set of routines to obtain and display the civil time
+and to time intervals and delay execution. They are
+
+getltime (  --- time_string )   Pushes a pointer to a time/date string
+            in Unix format: 'Sun 01 Dec 13:02:34 1988'  Also populates
+            a global structure m_ltime which is identical to a Unix
+            struct tm, which has all of these quantities as integers,
+            and evaluates a global m_ytime (int) which is the number of
+            deciseconds since the beginning of the current year.
+
+.ltime (  ---  )  Prints the above string.
+
+starttime (  ---  ) Sets an internal millisecond 'stopwatch' to zero.
+
+stopwatch (  --- ms ) returns the number of milliseconds since the last
+            'starttime'
+
+waitfor  ( ms --- )  suspend execution for ms milliseconds.
+
+waituntil ( ms --- )  suspend execution until the stopwatch (which was
+            started at some point with starttime) reaches ms milliseconds.
+\time

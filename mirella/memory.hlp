@@ -1,0 +1,17 @@
+memory
+The Mirella heap memory manager:
+nbytes msalloc             allocates and pushes msptr;  msptr @ is address
+                                of storage, MAKES NO DICTIONARY ENTRY
+nbytes memalloc name       does same but creates dictionary entry; on invocation
+                                name pushes pointer to storage
+name memfree               frees it, as does
+msptr chfree
+ch chfree                  ch is the memchannel; can be seen with
+showalloc                  which displays pointers, addresses and channels
+                                for all allocated memory
+nbytes scralloc            allocates nbytes, pushes msptr, names area
+                           'tn', n the channel number. msptr @ is addr of 
+                           storage. 
+
+Matrices and Arrays can also be allocated on the heap. See matrices, arrays
+\memory

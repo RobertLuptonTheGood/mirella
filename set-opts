@@ -1,0 +1,240 @@
+#!/bin/sh
+#
+# Set options for Mirella
+#
+# First find what sort of system we are running
+#
+if [ "`echo -n`" = "" ]; then		# echo supports -n
+	n=-n
+fi
+#
+# See what platform we are on.
+#
+machine=""
+if sh -c uname > /dev/null 2>&1 ; then
+	case `uname` in
+	  AIX)
+		machine=rs6000;;
+	  HP-UX)
+		machine=hp;;
+	  Linux)
+		machine=linux;;
+	  IRIX)
+		machine=sgi;;
+	  OSF1)
+		machine=alpha;;
+	  SunOS)
+		machine=sun;;
+	  ULTRIX)
+		machine=ultrix;;
+	esac
+fi
+#
+# Parse arguments
+#
+while [ X"$1" != X"" ]; do
+	case $1 in
+	  -f)
+		force=1;;
+	  -h)
+		echo "Usage: set_opts [ options]"
+		echo "options are:"
+		echo "	-f		Force; don't ask user questions"
+		echo "	-h		Print this message"
+		echo "	-m name		Specify a machine type"
+		echo "	-q		Suppress some messages"
+		echo ""
+		exit 0;;
+	  -m)			# specify a machine
+		if [ X"$2" = X"" ]; then
+			echo "You must specify a machine name with -m" >&2
+		else
+			machine=$2
+			mflag=1
+		fi
+		shift;;
+	  -q)
+		quiet=1;;
+	  *)
+		echo "Unknown flag: $1" >&2
+		$0 -h >&2
+		exit 1;;
+	esac
+	shift
+done
+#
+# Set some values that may be overridden
+#
+EXIT="EXIT"			# signal names for trap
+INT="INT"
+#
+# We are ready to talk to the user
+#
+if [ "$quiet" = "" ]; then
+	echo "I am going to ask you some questions to decide how to setup Mirella. If there's"
+	echo "something in [square brackets] at the end of a line, it's the default value;"
+	echo "to accept it just hit carriage return. If there are alternatives separated"
+	echo "by a |, the default value is the first one."
+	echo ""
+fi
+if [ "$mflag" = "" ]; then
+	echo "What machine are you on? (\"all\" will give a list of possibilities)."
+	while true; do
+		old_machine=$machine
+		echo $n "Choose a machine: [$machine] "
+		read reply
+		if [ "$reply" != "" ]; then
+			machine=$reply
+		fi
+		if [ "$machine" != "all" ]; then
+			break;
+		fi
+		echo "Valid machines include:"
+		echo "  dos             PC running DOS"
+		echo "  linux           A Linux box"
+		echo "  rs6000          IBM RS/6000"
+		echo "  sgi             Silicon Graphics"
+		echo "  sun             Sun 3 or Sparc"
+		if [ "$old_machine" != "" ]; then machine=$old_machine; fi
+done
+fi
+
+case $machine in
+  dos)
+	echo $n "Do you want to use the zortech compiler? [y/n] "
+	read ans
+	case $ans in
+	  n*)
+		unset zortech;;
+	  *)
+		zortech=1;;
+	esac
+
+	machineID="ATI486"
+	;;
+  linux)
+	machineID="LINUX"
+	;;
+  rs6000)
+	machineID="RS6000"
+	;;
+  sgi)
+	machineID="SGI"
+	;;
+  sun)
+	version=`uname -r | sed -e 's/^\(.\).*/\1/'`
+	if [ "$version" -ge "5" ]; then
+		machineID="SOLARIS"			# Oh deary me
+	else
+		EXIT=0				# trap can't handle names
+		INT=3
+		machineID="SUN"
+	fi
+
+	if [ -f /usr/openwin/include/X11/Xlib.h -a \
+					! -f /usr/include/X11/Xlib.h ]; then
+		openwin=1
+	fi
+	;;
+  *)
+	echo "I don't understand $machine; please configure by hand"
+	echo "When you are happy, please send mail to rhl@astro.princeton.edu"
+	exit 1;;
+esac
+#
+# Decide where to install Mirella
+#
+dest=/usr/local
+echo $n "Top level path to install things? [$dest] "
+read reply
+if [ "$reply" != "" ]; then
+	dest=$reply
+fi
+destbin=$dest/bin
+destlib=$dest/lib
+destetc=$destlib/mirella
+destinfo=$dest/info
+#
+while true; do
+	echo "The commands make install will install files as follows:"
+	echo "  binaries                        $destbin"
+	echo "  linkable libraries              $destlib"
+	echo "  Support files (e.g. termcap)    $destetc"
+	echo "  info files                      $destinfo"
+	echo $n "is this ok? [y|n] "
+	read reply
+	case $reply in
+	  n*)
+		echo "Please specify your preferences:"
+		echo $n "Binaries [$destbin] "
+		read reply; if [ "$reply" != "" ]; then destbin=$reply; fi
+		echo $n "Libraries [$destlib] "
+		read reply; if [ "$reply" != "" ]; then destlib=$reply; fi
+		echo $n "Support Files [$destetc] "
+		read reply; if [ "$reply" != "" ]; then destetc=$reply; fi
+		echo $n "Info files [$destinfo] "
+		read reply; if [ "$reply" != "" ]; then destinfo=$reply; fi
+		;;
+	  *)
+		break;;
+	esac
+done
+#
+# try to convert those destinations to canonical form
+#
+for f in destbin destlib destetc destinfo ; do
+	ff=`eval echo '$'$f`
+	eval $f=`echo $ff | sed -e "s|$dest|'\\$(DEST)'|"`
+done
+#
+# Now we know what to do, so it
+#
+echo $n "I am about to start modifying files, proceed? [y|n] "
+read reply
+case $reply in
+  n*)
+	echo "I am not making any changes. Goodbye"
+	exit 0;;
+esac
+#
+rm -f mirella/options.h mirella/makefile.mk mirage/makefile.mk
+#
+# Trap ^C
+#
+trap   'echo "Aborting setup"
+	rm -f mirella/makefile.mk mirella/options.h mirage/makefile.mk 
+	exit 1' $INT
+#
+# Start with Makefiles
+#
+tmpfile=set-opts.tmp
+trap	"rm -f $tmpfile" $EXIT
+#
+echo "s/MACHINE/$machineID/" > $tmpfile
+echo "s|^DESTDIR =.*|DESTDIR = $dest|" >> $tmpfile
+echo "s|^DESTBIN =.*|DESTBIN = $destbin|" >> $tmpfile
+echo "s|^DESTETC =.*|DESTETC = $destetc|" >> $tmpfile
+echo "s|^DESTLIB =.*|DESTLIB = $destlib|" >> $tmpfile
+if [ "$openwin" != "" ]; then
+	echo "s|^\#\(.*openwin.*\)|\1|" >> $tmpfile
+fi
+if [ "$zortech" != "1" ]; then
+	echo "s|^\(ZORTECH\)|#\1|" >> $tmpfile
+fi
+if [ "$machine" = "linux" ]; then
+	echo "s|^\(LIBX11 = \)|\1 -L/usr/X11R6/lib |" >> $tmpfile
+fi
+#
+for d in mirella mirage; do
+	echo "Creating $d/makefile.mk..."
+	sed -f $tmpfile	< $d/makefile.skl > $d/makefile.mk
+done
+#
+# Fix up options.h
+#
+echo "Creating mirella/options.h..."
+sed -e "s/MACHINE/$machineID/" mirella/options.skl > mirella/options.h
+#
+# Write protect those created files
+#
+chmod -w mirella/options.h mirella/makefile.mk mirage/makefile.mk

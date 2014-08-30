@@ -1,0 +1,103 @@
+matrix_arith
+/* It is assumed that all matrices are allocated with matralloc() or
+some similar allocator, which sets up storage as an array of pointers to
+lines, followed by the matrix data itself.  It is not assumed in what
+follows that the storage is contiguous, though in practice it is if that
+rule is followed.  In Mirella, the row and column numbers are available
+in the dictionary entry, and are used in this code for addition and
+multiplication and inversion.  */
+
+void ***
+matralloc(char *name,normal nrows,normal ncols,normal eltsize)
+        /* allocates storage for a matrix, nrows X ncols with elements of
+           size eltsize bytes, and sets up an array of line pointers.
+           returns a memchan pointer. Usage is, eg.
+    float ***mpptr = matralloc("matname",34,57,sizeof(float));
+    float **fmatrix = *mpptr;
+    float fij = fmatrix[i][j]; is the i, j element of the matrix.*/
+
+void
+mprt(float **mat, int nrow, int mcol, char *titl)   
+                /* prints floating point matrix with title */
+void
+madd(float **a, float **b, float **c, normal nrow, normal mcol )
+        /* adds nrow X mcol matrices a, b results in c */
+void
+mcmul(float **a,float c,float **b,normal nrow,normal mcol)
+        /* multiplies nrow X mcol matrix a by constant c, product in b */
+void
+mmul(float **a, float **b, float **c, normal n, normal m, normal l)  
+        /* multiplies a(nxm) by b(mxl), result in c(nxl) */
+void
+mvmul(float **a,float *vec,float *pvec,normal nrow,normal mcol)  
+        /* multiplies matrix (nrow x mcol) by vector (dim mcol),
+            result in pvec(dim nrow) */
+void
+vmmul(float *vec,float **a,float *pvec,normal nrow,normal mcol)  
+        /* multiplies vector (dim nrow) by matrix (nrow x mcol)
+            result in vector pvec (dim mcol) */
+double 
+matinv(float **a,float *ai,normal n)
+        /* inverts the nxn square matrix a, result in ainv. Uses pivoted
+            gaussian elimination; returns determinant */
+void
+linsolv(float **a,float *b,float *x,normal n)
+        /* solves the linear system ax=b, n eqns in n unknowns */
+\matrices
+
+ortho_polys
+Mirella has an orthogonal polynomial generator and function fitter which
+allows fitting arbitrary functions of the form P(x)f(x) where P is a 
+polynomial, with arbitrary weights on a finite net.
+
+void 
+mkorpol(float *w,float *x,normal n,normal m)  
+        /* mkorpol makes a set of polynomials which are orthogonal
+        with respect to the weights w; ie 
+            SUM w[i]*Pj(x[i])*Pk(x[i]) = q[j]delta(j,k).
+        If you wish to construct a set of orthogonal functions which are 
+            f(x)Pj(x), 
+        just use a set of weights which are
+            w' = w*f(x)^2; the routine will construct the poly part */
+void
+orpfit(float *y,float *ay,normal m)
+        /* orpfit fits the function defined by the vector y on the net
+        defined by the abscissae on the last call to mkorpol, in the sense
+        of minimizing the error
+            SUM w[i](y[i]-yf[i])^2; yf is the fitting polynomial, with
+        coefficients ay, maximum order m. Orpfit expects FLOAT coef, note. 
+        If you are fitting to a set f(x)Pj(x) as described in mkorpoly(), the
+        ordinates presented to this routine need to be the ratio of the real 
+        ordinates to f(x)   */
+double 
+poly(float z,float *a,normal m)  
+        /* evaluates the polynomial defined by the coefficient array a */
+\fitting
+
+splines,integ
+double 
+linterp(float z,float *x,float *y,normal n)   
+        /* lin interpolator, arg z, argtable x(float), ftable y (float), 
+        table size n. x must be monotonic. Does binary search */
+void 
+gsplinit(float *x,float *y,float *k,normal n,float q2b,float q2e)  
+        /* sets up spline derivative array k for a
+	given x and y array of length n POINTS, n-1 intervals, for
+	given estimates for the second derivatives at the endpoints,
+	q2b and q2e; "natural" boundary conditions for q2b=q2e=0 */
+void
+splinit(float *x,float *y,float *k,normal n)
+        /* gsplinit() with q2b = q2e = 0.) */
+
+float splder; /* global containing last-evaluated spline derivative from
+                 last call to spline() */
+
+double 
+spline(float z,float *x,float *y,float *k,normal n) 
+        /* spline evaluator for general monotonic (increasing) abscissa 
+        tables, argument z; deriv in splder  */
+double 
+integral(float a,float b,float *x,float *y,float *k,normal n) 
+        /* does definite integral from a to b of the function y defined
+        on the net x, spline derivative array k */
+\splines,integ

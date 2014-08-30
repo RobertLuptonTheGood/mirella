@@ -1,0 +1,32 @@
+matrices
+Matrices in Mirella are set up like C matrices, with an array of pointers
+to rows. If mname is a matrix name,
+
+r c mname     pushes the address of the r c element.
+
+Matrices can be set up
+1.) in the dictionary:
+    nrow ncol nmatrix mname      compiles a normal (float or int) matrix of 
+                                                                    ame mname
+    nrow ncol smatrix mname        "        short int "      "
+
+2). in the heap:
+    nrow ncol nmmatrix mname     compiles a normal matrix of name mname
+                                    and allocates heap space with same name
+    nrow ncol smmatrix mname     does the same for short int matrices.
+
+3.) from C code in the heap.     a pointer mptr allocated by matralloc() or
+    some other means, which points to the array of row pointers and
+    minstalled with  
+        
+        v  mptr ++mptr f nrow ncol
+
+    defines a float Mirella matrix mptr with normal properties.
+
+There are words to push the address of the base of the pointer array;
+m' name or , compiling, [m'] name
+
+The allocated dimensions are stored in the dictionary entry and are
+pushed by ' name @nrcol. They can be changed by nr nc 'name !nrcol,
+but the USER must ensure that the allocated dimensions are not exceeded.
+\matrices

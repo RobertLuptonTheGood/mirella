@@ -1,0 +1,46 @@
+#include <minstall.def>
+#define C_M 0
+\Expect typeless == 0
+\Expect no_size == 0
+\
+{
+}
+\
+\ from mirast.c and needed other code
+\
+#ifdef DOS32
+#define C_M C_M + 4
+p	arc-session	arc_session
+p	arc-stopsession	arc_stopsession
+f	mast_queue	mast_queue		i p p
+c	ast_stack	past_stack		p
+c	Sizast		sizast			i
+f	gtime		gtime			@ i
+v	nast_q		nast_q			i
+f	eprompt		eprompt        		@% i
+p	ast_check	ast_check
+p	ast_preamble	ast_preamble
+p	ast_postamble	ast_postamble
+\
+\ test code from mirrs232.c
+\
+f	setserialport	setserialport		i i i i i
+v	termport	termport		i
+v	microport	microport		i
+f	s_q_char	s_q_char		i * i
+f	s_get1char	s_get1char		i * i
+f	s_putchar	s_putchar		i i
+f	s_write1char	s_write1char		i i
+f	s_mgets		s_mgets			p i
+f	s_m1write	s_m1write		i
+f	s_mwrite	s_mwrite		p
+f	s_mput		s_mput			i
+f	s_mputs		s_mputs			p
+f	s_tput		s_tput			i
+p	s_startterm	s_startterm
+p	s_stopterm	s_stopterm
+f	s_treadif	s_treadif		* i
+f	call_callback_fns call_callback_fns	* i
+s	s_mprompt	s_mprompt		c
+#endif
+\Expect (C != M) == C_M

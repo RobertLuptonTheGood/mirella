@@ -1,0 +1,178 @@
+declarations
+Declarations in forth are intimately tied with dictionary memory allocation.
+
+variable ( i:varname --- )(does: --- addr)  
+    variable varname creates a dict entry with name varname; invocation
+    of varname pushes the address of the parameter field of varname (where the
+    value of the variable is stored)
+
+ivar ( val i:varname --- )(does: --- addr)
+    same as variable except stores val as the value; same as
+    variable varname  val varname !
+
+fvar ( (f)val i:varname ---)(does: --- addr)
+    same as variable except stores the floating value (f)val from the float
+    stack; same as variable varname (f)val varname f!
+
+constant  ( val i:cname --- )(does: --- val )
+    val constant cname creates a dictionary entry with name cname; invocation
+    of cname pushes the value on the pstack.
+
+fconstant ( (f)val i:cname ---)(does: --- (f)val )
+    like constant, but takes value from and pushes value to float stack
+
+array     ( n i:arname )(does: i --- addr_of_ith_elt )
+    creates dict entry with name arname and allots 4n bytes of storage; on
+    invocation,  i array pushes address of ith element of array.
+
+For other array types in the dictionary and on the heap see category arrays
+\forth
+
+control-flow
+The basic control constructions are illustrated below; see a book for more
+detail. All work only in colon definitions.
+
+if--[else]--then:
+tos if (code to be executed if tos is TRUE) [else (code to be executed if
+    tos is false)] then  (if eats tos)
+
+begin--until
+begin (code to be repeated)  tos until 
+    (repeats until tos is true. until eats tos)
+
+begin--while--repeat
+begin (code to be repeated) tos while (code to be repeated while tos is true)
+    repeat
+    Each time through the code just after the begin is executed; if tos
+    is TRUE, (the while eats the tos) the code after the while is executed,
+    and control returns to the code just after the begin. The first time
+    tos is FALSE, control skips to the code just following the repeat.
+
+do--loop
+n2 n1 do (code to be repeated) loop
+    (repeats the code for loop count n1....n2-1; always executes once. The
+    word i pushes the loop count inside the (innermost) loop. If you nest
+    do loops, the word j pushes the loop count of the loop one level up.) 
+    do eats n2 and n1.
+
+?do--loop 
+n2 n1 ?do (code to be repeated) loop
+    like do--loop but if n2==n1 does nothing.
+
+do-- n +loop
+n2 n1 do (code to be repeated) n +loop
+    like do but advances the loop index by n each time through; exits
+    when loop index at next time through would be >= n1 (n>0) or
+    <n1 (n<0).
+\forth 
+
+store/fetch
+The following words store to memory and fetch from it:
+
+! (store)   ( val addr --- , stores val at addr, val 32-bit int)
+s!          ( sval addr --- , stores val at addr, val 16-bit int )
+c!          ( cval addr --- , stores val at addr, val byte )
+note: objects on stack are always 32-bit ints; s! and c! truncate if
+object is bigger than 16 or 8 bits. On many machines an address error
+is caused if one !s to an address not divisible by 4 or s!s to an odd addr.
+
+f!          ( (f)val addr --- , stores (f)val at addr, 32-bit float )
+
+@ (fetch)   ( addr -- contents of addr , pushes 32-bit int at addr )
+s@          ( addr -- contents of addr , pushes short int at addr )
+c@          ( addr -- contents of addr , pushes byte at addr )
+f@          ( addr -- (f)contents of addr , fpushes float at addr )
+
+and the following related words:
++!  ( i addr -- , increments the contents of addr by i )
+s+! ( i addr -- , increments the short int at addr by i )
+c+! ( i addr -- , increments the byte at addr by i )
+f+! ( (f)a addr -- , increments the float at addr by (f)a )
+f*! ( (f)a addr -- , multiplies the float at addr by (f)a )
+f/! ( (f)a addr -- , divides the float at addr by (f)a )
+f-! ( (f)a addr -- , subtracts (f)a from the float at addr )
+
+++  ( addr -- , increments contents of addr by 4)
+--  ( addr -- , decrements contents of addr by 4 )
+@+  ( addr -- addr+4 <addr> , postincrement )
+-@  ( addr -- addr-4 <addr-4> , predecrement )
+\forth
+
+clear/move
+There are Mirella/forth words to clear, fill, and move sections of memory:
+
+fill    ( addr count q -- , fills count bytes starting at addr with the value q)
+erase   ( addr count -- , fills count bytes starting at addr with the value 0 )
+blank   ( addr count -- , fills count bytes starting at addr with ascii blanks )
+clear   ( alias for erase )
+nclear  ( addr count -- , clears 4*count bytes starting at addr )
+sclear  ( addr count -- , clears 2*count bytes starting at addr )
+
+cmove   (srcadd desadd count ---, moves count bytes from srcadd to desadd,
+            starting up from srcadd )
+<cmove  (srcadd desadd count ---, moves count bytes from srcadd to desadd,
+            starting down from srcadd+count-1 )
+move    (srcadd desadd count ---, moves count bytes from srcacc to desadd,
+            in whichever direction is nondestructive if they overlap )
+smove   (srcadd desadd count --- 'move's 2*count bytes )
+nmove, fmove  (srcadd desadd count --- 'move's 4*count bytes)
+\forth
+
+dic_allocation
+Mirella has standard forth words for allocating dictionary space:
+
+here    pushes the current dictionary pointer
+allot   ( count --- , reserves count bytes, starting at 'here' )
+clallot ( count --- , same as allot but clears space )
+sallot  ( count --- , 'clallot's 2*count bytes )
+nallot  ( count --- , 'clallot's 4*count bytes )
+,       ( i --- , stores i in the dictionary and advances dic pointer 4 bytes)
+s,      ( i --- , stores (short) i in the dic and advances dic pointer 2 byte )
+c,      ( i --- , stores (byte) i in the dic and advances dic pointer 1 byte)
+f,      ( (f)a --- , stores (float) (f)a in the dic and adv dic ptr by 4 bytes)
+align   ( --- , advances dic ptr to next location divisible by 4 )
+
+various array and matrix words also allocate space in the dictionary; see
+categories arrays and matrices
+\forth
+
+dic-entries
+Mirella dictionary entries have the form
+(32-bit link field)(prec.byte)(name string)(0 padding)(code field)(body ....)
+
+The link field points to the previous entry in this vocabulary for this
+thread (there are 8 threads, the index to which is generated by hashing
+the name).
+
+The precedence byte is 1 for immediate words (words executed during
+compilation), 0 for not
+
+The name string is a normal forth string, beginning with a count byte,
+and the (precedence byte)+(name) is padded with nulls to make a field
+a multiple of 4 bytes long. If the name has 2 less than a mult. of 4 chars,
+it is NOT null terminated.
+
+The code field (address is code field address, or cfa) contains either a 
+token or an address which identifies what kind of entry the word is.
+
+The body contains the list of quantities or addresses which make up the
+forth code which is executed when the word is invoked.  For simple words
+like constants and variables, the first location (32-bit) is the
+parameter field, where the value is stored, and the address is the
+parameter field address (pfa). 
+
+There are words for maneuvering within a dictionary entry:
+
+'   ( i:name --- cfa_of_name )
+['] ( compiling word: like ' but for use in definitions; pushes the cfa of 
+        the next word in the definition when the code is executed )
+p'  ( i:name -- pfa_of_name )
+[p']    Compiling word like p'
+cp' ( i:name --- <pfa_of_name> )
+[cp']   Compiling word like cp'
+>name  ( cfa --- addr of name )
+>link  ( cfa --- addr of link field )
+name>  ( addr of name --- cfa )
+>body  ( cfa -- pfa )
+\forth
+

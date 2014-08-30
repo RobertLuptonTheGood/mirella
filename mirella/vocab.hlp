@@ -1,0 +1,51 @@
+vocabularies
+vocabulary      (i:vname --- )
+    Compiles vocabulary entry vname. Invoking vname sets context
+    to vname, which replaces the current top of the context search stack
+    with  vname.
+
+    also vname      pushes vname on the search stack.
+
+    definitions     sets current, the vocabulary into which definitions
+                    are compiled, to the present context (top of search
+                    stack)
+
+    only vname      leaves only vname and root on the search stack. 
+
+    order           prints the vocabulary search order
+
+    previous        pops the top entry off the context stack
+
+    root            is the root vocabulary; contains the basic vocabulary-
+                    handling words and a reference to forth.
+
+    seal vname      leaves only vname on the search stack. Deadly unless
+                    you have a : forth forth ; or : root root ; in the
+                    vname definitions;
+
+\vocabularies
+only * vocabulary
+previous * vocabulary
+also * vocabulary
+seal * vocabulary
+definitions * vocabulary
+root * vocabulary
+
+
+modules
+MODULES:
+    There is a primitive mechanism for making private modules which
+    have only a few high-level definitions accessible outside, which uses 
+    the also-only vocabulary scheme:
+
+    module> scrag      / creates a vocabulary scrag and sets definitions.
+    .....private low-level code....
+    public>           / sets definitions to pre-scrag vocab but keeps
+                        scrag in search order
+    .....public code....
+    end>              / removes scrag from search order
+\vocabularies
+
+
+
+

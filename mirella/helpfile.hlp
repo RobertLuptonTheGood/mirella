@@ -1,0 +1,61 @@
+helpfiles
+MAINTAINING THE HELP SYSTEM:    
+
+    The help system in Mirella is based on a set of ascii files with
+    help text, and an automated indexing system. The lists of help files
+    of each type (ie each major topic: mirella, mirella c code, application,
+    application C code ) are themselves kept in files: mhelp.lis, chelp.lis
+    (in the Mirella directory), aphelp.lis, achelp.lis (in the appl. dir.
+    With each of those lists is associated an INDEX file mhelp.inx, etc.
+    The helo files themselves should have ext .hlp. The help files are 
+    organized into categories, which may or may not correspond to the 
+    individual help file contents. 
+
+    Help files contain (typically) multiple help entries, the format 
+    of each of which is as follows:
+
+entryname       \ the name of the entry you wish in the help index must be
+                the first word in the entry. Its length is not restricted, 
+                but only the first fifteen characters are significant.
+                It is followed by 
+
+arbitrary text, the only restriction being that no line may begin with
+a backslash (\). The entry is terminated with
+ 
+"\cat"          (no quotes)  Where cat is the category name you wish the entry
+                to be filed under. Again, fifteen significant char.
+
+    If, as is often the case, there are subtopics in this topic which
+    you wish to invoke this same text, you may list them under the 
+    category line, thus:
+
+sub1 * entryname    \ entryname is the same as the one above, the "alias"
+sub2 * entryname
+                    etc.
+
+    The first line NOT containing a * is deemed by the indexer to be a 
+    new primary entry. The subtopics are not listed in the category lists;
+    if you wish an alias which is listed, use a + instead of a * .
+    
+    TOOLS: There are tools to help. 
+
+    hedit helpfilename  invokes the editor, which you should have set
+                        to create 4-space tabstops. After the editor is
+                        done, the file is run through a filter which 
+                        expands the tabs to spaces. The word
+
+    fixhelp helpfilename  runs the filter if for some reason you need
+                        to do it alone.
+
+    addhelpfile helpfilename listfilename   adds helpfilename to the 
+                        listfilename, which is a simple ascii file with
+                        one helpfilename per line
+
+    makeindex listfilename    makes a new index file help.inx, a binary file
+                        containing an array of index structures. Since
+                        the information includes offsets into the help
+                        files, this routine must be run whenever changes
+                        are made.
+\helpfiles
+
+

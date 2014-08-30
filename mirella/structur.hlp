@@ -1,0 +1,82 @@
+struc_arrays 
+Structure arrays in Mirella:
+Arrays of structures can be imported from C code or constructed 
+in the Mirella dictionary. The defining words for arrays are 
+
+strucarray  ( comp: elsize number in:name ---) ( ex:   n --- addr of base ) 
+    for dictionary arrays, and 
+
+struccarray ( comp: clink_addr elsize number in:name --- )
+            (ex: n --- addr of base ) 
+    for minstalled explicitly declared C arrays, declared as
+
+struct blat sarr[nelt];
+
+Thus an array sarr ( conveniently called +sarr in Mirella) minstalled with
+c   Selsiz selsiz i       (declared as  int selsiz = sizeof(struct glop);)
+v   +sarr  +sarr  Selsiz 100   (declared as  struct glop sarr[100];)
+
+    is set up with a Mirella array dictionary entry by
+
+p' +sarr Selsiz 100 struccarray sarr
+
+    and 
+
+37 sarr  pushes the base address of the 37th structure in the array.
+
+NOTE THAT STRUCCARRAY ONLY WORKS WITH EXPLICITLY DECLARED STRUCTURE ARRAYS; 
+if you declare a pointer to a structure and malloc an array, say,
+
+struct glop *sarrp;
+sarrp = (struct glop *)malloc(.......      and minstall sarrp as
+
+c sarrp  sarrp p
+
+you MUST use the construct
+
+p' sarrp Selsiz 100 strucparray sarr    ( NOT struccarray )
+
+There is an analogous structure for arrays allocated from Mirella on the
+heap:
+
+Selsiz 100 strucmarray sarr         which allocates and makes the dict. entry
+
+\structures
+
+offsets
+There is a defining word '+offset' used to define offsets to 
+    structure members: if sarr[] is defined in C as
+
+struct blat{
+    int x;
+    int y;
+    char name[8];
+    short int shar[10];
+} sarr[100];
+
+then the recommended Mirella construct is
+
+begstruct      \ struct blat
+    +offset x       Isize
+    +offset y       Isize
+    +offset name    Csize 8 *
+    +saroff shar    Ssize 10 *     (naroff, caroff for normal or char arrays)
+endstruct     or     endstset  Mstsize     or   Csize endstchk
+
+defines x, y, name, and shar such that, if sarr is defined as a struccarray as
+above, ( the offset names need not be the same as the C member names, of
+course)
+    
+37 sarr x       pushes the address of sarr[37].x,
+37 sarr name    pushes the address of the string sarr[37].name
+37 sarr 8 shar  pushes the address of sarr[37].shar[8]
+
+endstruct simply drops stuff on the stack; endstset defines a constant which
+is the size of the structure in bytes; endstchk checks that a C constant
+which is defined (by you) as int Csize = sizeof(struct blat) is consistent
+with the Mirella definitions....a good way to remind yourself when you
+change definitions in one world or the other.
+
+Mirella DEMANDS the old C rule that offset names be unique.
+\structures
+

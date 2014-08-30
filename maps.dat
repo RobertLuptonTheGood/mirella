@@ -1,0 +1,12 @@
+#This is a set of key maps for mirella
+#name                   key
+delete_previous_word    ^[\177
+start_of_line           \033[1~
+end_of_line             \033[4~
+delete_char             \033[3~
+
+^                       ^
+history_char            ^
+
+
+

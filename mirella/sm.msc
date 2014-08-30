@@ -1,0 +1,43 @@
+\SM words
+#include <options.h>
+#if defined(HAVE_SM)
+\Expect (C != M) == 34
+\Expect typeless == 0
+\Expect no_size == 0
+V SM
+f	_device		mir_device	s
+p	_alpha		sm_alpha
+f	_angle		mir_angle	f
+f	_axis		mir_axis	f f f f i i i i i 
+f	_box		sm_box		i i i i
+f	_connect	mir_connect	p i p i
+f	_ctype		sm_ctype	s
+p	_curs		mir_curs
+p	_dot		sm_dot
+f	_draw		mir_draw	f f
+f	_draw_point	mir_draw_point	f f i i
+p	_erase		sm_erase
+f	_errorbar	mir_errorbar	p i p i p i i
+f	_expand		mir_expand	f
+f	_format		sm_format	s s
+p	_gflush		sm_gflush
+p	_graphics	sm_graphics
+f	_histogram	mir_histogram	p i p i
+f	_label		sm_label	s
+f	_limits		mir_limits	f f f f
+f	_line		mir_line	f f f f
+f	_ltype		sm_ltype	i
+f	_lweight	sm_lweight	i
+f	_notation	mir_notation	f f f f
+f	_plotsym	mir_plotsym	p i p i p i
+f	_points		mir_points	p i p i
+f	_ptype		sm_ptype	p i
+f	_putlabel	sm_putlabel	i s
+f	_relocate	mir_relocate	f f
+f	_shade		mir_shade	i p i p i i
+f	_ticksize	mir_ticksize	f f f f
+f	_window		sm_window	i i i i
+f	_xlabel		sm_xlabel	s
+f	_ylabel		sm_ylabel	s
+F
+#endif

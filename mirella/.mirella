@@ -1,0 +1,16 @@
+\
+\ Variables for Mirella
+\ If "name" is not found here, we'll look for MIRNAME in the environment
+\
+\ Ensure that /local is changed to reflect your setup; note the
+\ trailing /s in dirpath
+\
+dirpath 	./
+miragedir       ./
+vtradir         ./
+\
+minclude	.
+history_file	.mirhist
+keymap	        ../maps.dat
+termcap	        ../termcap
+

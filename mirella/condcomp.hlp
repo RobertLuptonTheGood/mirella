@@ -1,0 +1,21 @@
+conditl-comp
+CONDITIONAL COMPILATION
+
+Mirella supports a C-like mechanism for the conditional compilation of
+forth code in files , and in so doing introduces 3 KEYWORDS, of which
+there are normally none in forth.  It works like:
+
+'value on stack'
+#if
+words to be compiled or executed if 'value on stack' is nonzero
+#else
+words to be compiled or executed if 'value on stack' is zero
+#endif
+
+#if, #else, and #endif must not be redefined, and they must occur
+at the beginning of the line, just as in C. The expressions can be 
+nested indefinitely. Forth comments ( in parentheses or beginning with
+/* or \ ) can follow any of them. They can occur IN colon definitions,
+but be sure you know how the stack is being handled in that case. 
+
+\conditl-comp 

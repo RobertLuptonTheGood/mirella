@@ -1,0 +1,154 @@
+stack-notation
+Notation: Standard Forth notation: 
+( input params on stack [i:name] --- output params on stack , comments )
+    input params are listed in stack order, last on top
+    i:name   if the word takes input on the input stream; name is
+        followed by the delimiter if other than blank; if more than
+        one word expected, list is displayed: i:name1 name2 
+    output params are listed in stack order, last on top.
+    parameters on the floating stack are preceded by (f); note that
+        there is no intrinsic order between the parameter and floating
+        stacks, since they are separate. Thus a word which has two int
+        and two float parameters,
+
+        twotwo  ( (f)par1 (f)par2 ipar1 ipar2 --- (f)out )
+
+    can be invoked as (f)par1 ipar1 (fpar2) ipar2 twotwo.
+
+The help files also often use invocation by example:
+
+(f)par1 (f)par2 ipar1 ipar2 twotwo -> (f)out
+
+forth words normally destroy (pop) their arguments.
+
+if addr is an address, <addr> is its contents as a 32-bit int,
+<(s)addr> is its contents as a short int, <(c)addr> is its contents as
+a byte, and <(f)addr> is its contents as a 32-bit float.
+\forth
+
+stack-ops
+STACK OPERATIONS
+not     (i --- ~i, bitwise not)
+or      ( i j --- i|j , bitwise or )
+xor     ( i j --- i^j , bitwise xor )
+and     ( i j --- i&j , bitwise and )
++       ( i j --- i+j )
+-       ( i j --- i-j )
+*       ( i j --- i*j )
+/       ( i j --- i/j, integer )
+mod     ( i j --- i mod j )
+>>      ( i j --- i shifted right j bits )
+<<      ( i j --- i shifted left j bits )
+dup     ( i --- i i, copies tos on tos )
+2dup    ( i j --- i j i j )
+ndup    ( in ..... i1 n --- in .... i1 in ..... i1)
+drop    ( i --  , deletes tos )
+2drop   ( i j --- )
+swap    ( i j --- j i )
+rot     ( i j k --- j k i )
+-rot    ( i j k --- k i j )
+over    ( j k --- j k j )
+2over   ( j k l m --- j k l m j k )
+nip     ( j k --- k )
+tuck    ( j k --- k j k )
+pick    ( in in-1 in-2 .... i0 k --- in in-1....i0 ik, copies k'th elt to tos)
+roll    ( in in-1...ik+i ik ik-1...i0 k --- in in-1..ik+1 ik-1..i0 ik,
+            puts k'th elt on top, moves all below up to fill ).
+negate  (i --- -i)
+abs     (i --- abs(i) )
+max     (i j --- max(i,j) )
+min     (i j --- min(i,j) )
+?dup    ( in --- in == 0 ? in : in in, dups tos if nonzero )
+>r      ( in --- pushes tos onto return stack. Only in definitions )
+r>      ( --- tor , pushes top of return stack on stack. Only in definitions )
+depth   ( --- depth, pushes depth of stack )
+
+comparisons: TRUE is -1 (all bits on) FALSE is 0
+<       (i j --- i<j, TRUE iff i<j )
+>       (i j --- i>j )
+=       (i j --- i==j)
+0>      (i --- i>0)
+0<      (i --- i<0)
+0=      (i --- i==0)
+u<      (i j --- i<j, treating i and j as unsigned ints)
+between ( i j k --- (j<=i && i<= k))
+within  ( i j k --- (j<i && i<k))
+
+incrementing and decrementing on the stack
+1+      (i --- i+1 )
+2+      (i --- i+2 )  same as sa1+ (2-byte address increment)
+4+      (i --- i+4 )  same as na1+ (4-byte address increment)
+2*      (i --- 2*i)
+4*      (i --- 4*i)
+also 1-, 2-, 4- 2/ 4/.
+
+stack address manipulations:
+na+     ( i j --- i + 4*j , increments i by j normal (4-byte) address cells )
+sa+     ( i j --- i + 2*j ,   "        "  "  " short (2-byte)     "    "    )
+see sa1+ na1+ above
+\forth
+
+float-stack
+    FLOATING POINT STACK
+IN THE FOLLOWING, FOR BREVITY a,b,c,... are floats on the float stack,
+i,j,k... ints on the parameter stack
+f+       ( a b --- a+b )
+f-       ( a b --- a-b )
+f*       ( a b --- a*b )
+f/       ( a b --- a/b )
+fdup     ( a --- a a, copies ftos on ftos )
+2fdup    ( a b --- a b a b)
+fdrop    ( a --  , deletes ftos )
+2fdrop   ( a b --- )
+fswap    ( a b --- a b )
+frot     ( a b c --- b c a )
+-frot    ( a b c --- c b a )
+fover    ( a b --- a b a )
+fpick    ( an an-1 an-2....a0 k --- an an-1....a0 ak, copies k'th felt to ftos)
+froll    ( an an-1...ak+i ak ak-1...a0 k --- an an-1..ak+1 ak-1..a0 ak,
+            puts k'th elt on top, moves all below up to fill ).
+fix      ( (f)a --- fix(a) , fixes ftos and moves it to tos )
+float    ( i --- float(i) , floats tos and moves it to ftos )
+fabs     ( a --- fabs(a) )
+fmin     ( a b --- fmin(a,b))
+fmax     ( a b --- fmax(a,b))
+fnegate  ( a --- -a )
+f< f> f= f0= fbetween: like < > = 0= between but compare objects on fstack, 
+       leave TRUE or FALSE on parameter stack; operands are removed from fstack
+\forth
+
+interstack
+Mirella has a third stack for temporary storage, the temporary stack.
+The only operations defined for it are transfers to other stacks, done
+without any conversions or respect for type. The stack-transfer words are
+
+p>f     parameter-to-float (NOT the same as 'float'! no conversion )
+f>p     float-to-parameter (NOT the same as 'fix'! no conversion )
+f>t     float-to-temp
+t>f     temp-to-float
+p>t     parameter-to-temp
+t>p     temp-to-parameter
+t@      copies ttos to tos, does not destropy ttos
+ft@     copies ttos to ftos, does not destroy ttos
+tdrop   drops top of temp stack
+\forth
+
+lists-to-mem
+Mirella has words to transfer lists on the stack to memory:
+
+rmove  (i0 ..... in addr n ---  , moves the list of integers i0..in to
+            addr, addr+4, addr+8 .... addr+4*n, in stack order, ie
+            i0 in addr, in in addr+4*n )
+
+srmove (s0 .... sn addr n --- , moves the list of integers s0...sn to
+            addr, addr+2, addr+4, .... addr+2*n in stack order; ie assumes
+            a short int array.
+
+frmove (f0 .... fn addr n --- , moves the list of floats on the fl stack to
+            addr, addr+4, addr+8,... addr+4*n in stack order.
+
+crmove (c0 .... cn addr n --- , moves the list of integers c0...cn to
+            addr, addr+1....addr+n in stack order; ie assumes a byte array
+\forth
+
+

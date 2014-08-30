@@ -1,0 +1,9 @@
+\Expect (C != M) == 2
+\Expect typeless == 0
+\Expect no_size == 0
+#include <minstall.def>
+{
+   #include "mirella.h"
+}
+p	test-uchar	test_uchar
+p	test-interrupt	test_interrupt

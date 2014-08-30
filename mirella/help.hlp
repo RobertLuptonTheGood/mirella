@@ -1,0 +1,42 @@
+help
+<***************  THE MIRELLA HELP SYSTEM  **************************>
+
+The word 'help' displays a quick guide to the contents of the help system. 
+This screen provides a guide to the mechanics of the browser invoked when
+you ask for help. There are several commands:
+
+<cr> or <sp>    Advances the screen by one page; two lines from the last
+                    page are displayed at the top.
+
+-               Backs up by one page.
+
+^B              Goes back to the beginning.
+
+/ or ^S (some systems)  Asks for a search string. When you hit <cr> that
+                string is searched for starting from the top of the current
+                page. If you hit <cr> without entering a string, it will
+                search for the last entered search string starting at the
+                last place it was found, IF that search was the last thing
+                you did. Otherwise it starts from the top of the page.
+
+^R              Like search, but searches backwards.
+
+<esc>           returns you to the Mirella outer interpreter, if you called
+                the help system from Mirella; to the operating system 
+                otherwise. At the end of the file, an EOF line is displayed
+                at the bottom, and when that line is there, <cr> does the
+                same as <esc>.
+
+The help system is organized into 'categories' and 'items'. Typing
+'mhelp' displays a list of CATEGORIES about which help is available
+for the Mirella system, and prompts the user to choose one, which evokes
+a list of ITEMS under that category, and a prompt to choose one of them,
+which so doing produces the help text. Typing 'mhelp catname' from the outer
+interpreter or OS  produces the item list, and 'mhelp itemname' the help
+text. Any unique abbreviatiion will serve for the names.
+
+In some circumstances there are also 'aliases', which are typically
+single items in the help files; typing 'mhelpall (say) catname' will
+produce the list of all the aliases, which are not normally listed
+with 'mhelp'.
+\help

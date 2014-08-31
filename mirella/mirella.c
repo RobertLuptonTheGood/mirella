@@ -175,6 +175,8 @@ normal  tem_stk[TSSIZE+1];
 token_t *rtn_stk[XRSSIZE+1];
 token_t **xrp_4th;
 
+static char s_no_msg, *no_msg = &s_no_msg; /* signal a return with no text */
+
 char    tibbuf_4th[TIBSIZE];   /* def. exported */
 normal  *dp_4th = 0;
 normal  *xsp_4th;
@@ -521,7 +523,13 @@ mirellam()
 	do_init3();
     }else{ 
     /* this is a longjmp return */
-        fixerror((char *)j_ret);
+#define NO_STRING_VIA_LONGJMP 1		/* true if you can't pass a (char *) through an int */
+
+#if NO_STRING_VIA_LONGJMP
+        fixerror(no_msg);		/* we already printed the string */
+#else
+        fixerror((char *)j_ret);	/* this is evil */
+#endif
 #ifdef SIGNALS
 #ifdef SIGACTION
         if(sigflg){
@@ -2020,8 +2028,6 @@ int sig;
 /*
  * does a longjmp(env_4th,arg) or exit(1), whichever is appropriate
  */
-static char s_no_msg, *no_msg = &s_no_msg; /* signal a return with no text */
-
 void
 erret(arg)
 char *arg;
@@ -2037,6 +2043,11 @@ char *arg;
       if(arg == (char *)NULL) {
 	 arg = no_msg;			/* NULL means the call to setjmp */
       }
+#if NO_STRING_VIA_LONGJMP
+      if (strlen(arg) > 0) {
+	 fprintf(stderr, "\n%s", arg);
+      }
+#endif
       longjmp(env_4th,(int)arg);
    }
 }

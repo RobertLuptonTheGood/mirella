@@ -98,6 +98,8 @@ VERSION 5.1:
 #include "images.h"
 #endif /* VMS */
 
+const normal sizeofN = sizeof(normal);
+
 #ifdef SIGNALS 
 
 #  ifdef VMS

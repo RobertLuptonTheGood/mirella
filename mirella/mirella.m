@@ -104,8 +104,8 @@ alias defines is  \ ' old defines new: old is existing word, new is deferred
 2 constant Ssize    \ sizeof(short int)
 4 constant Isize    \ sizeof(int)
 4 constant Fsize    \ sizeof(float)
-4 constant Psize    \ sizeof(void *)
-4 constant Nsize    \ sizeof(normal)
+alias Psize SizeofN \ sizeof(void *)
+alias Nsize SizeofN \ sizeof(normal)
 1 constant Csize    \ sizeof(char) 
 
 \ jeg9605  fixed for placekeeper change in mirellio.c and move here from
@@ -166,11 +166,11 @@ alias defines is  \ ' old defines new: old is existing word, new is deferred
 \ dictionary clearing, allocation, moving
 : clallot dup here swap clear allot ;    \ like allot, but clears
 : sallot 2* clallot ;
-: nallot 4* clallot ;
-: nclear 4* clear ;
+: nallot n* clallot ;
+: nclear n* clear ;
 : sclear 2* clear ;
 
-: nmove 4* move ;
+: nmove n* move ;
 : fmove 4* move ;
 : smove 2* move ;   \ all nondestructive
 
@@ -220,8 +220,8 @@ alias f.r df.r
 : -- -1 swap +! ;   ( addr --- , decrements in place )
 : n++ 4 swap +! ;   ( addr --- increments pointer by one normal in place )
 : n-- -4 swap +! ;  ( addr --- decrements pointer by one normal in place )
-: @+ dup 4+ swap @ ;  ( addr --- addr+4 *[addr] )
-: -@ 4- dup @ ;   ( addr -> addr-1 *[addr-4] ) 
+: @+ dup n+ swap @ ;  ( addr --- addr+sizeof<normal> *[addr] )
+: -@ n- dup @ ;   ( addr -> addr-1 *[addr-sizeof<normal>] ) 
 : t@ tsp@ @ ;     ( --- top_of_temp_stack )  \ nondestructive
 : tdrop t>p drop ;
 : t. t@ . ;      \ nondestructive                            
@@ -357,7 +357,7 @@ alias f.r df.r
 
     \ words for handling structures in Forth. First set are obsolete.
 : offset create DOOFFSET here body> ! ,  ;
-: noffset 4* offset ;
+: noffset n* offset ;
     \ n offset memname (compiling)
     \ memname adds offset in bytes or normals to stack (ex)
         
@@ -697,8 +697,8 @@ variable rmargin   60 rmargin !
 : fend      0 2 seek ;
 : seekend   0 2 seek ;
 : fwrite    Fsize * write ;  \ fix rest
-: nwrite    4* write ;
-: nread     4* read  ;
+: nwrite    n* write ;
+: nread     n* read  ;
 : swrite    2* write ;
 : sread     2* read  ;
 : aclose achan @ close ;        \ close the active channel
@@ -838,7 +838,7 @@ alias _memsptr _memalloc \ for consistency (?)
 \ 2-d matrix size stuff; matrix area has row ptr array at beginning
 
 : nmatneed ( nrow ncol --- nbyte) 
-    over * 4* swap na+ ( howmany do we need for a normal matrix ? )
+    over * n* swap na+ ( howmany do we need for a normal matrix ? )
 ;
 
 : smatneed ( nrow ncol --- nbyte)
@@ -853,10 +853,10 @@ alias _memsptr _memalloc \ for consistency (?)
 \ followed by nmat arrays of nrow ptrs each, followed by data
 
 : n3matneed ( nmat nrow ncol --- nbyte )
-    2 pick 2 pick * * 4* p>t            \ data bytes 4 is data size
+    2 pick 2 pick * * n* p>t            \ data bytes sizeof(normal) is data size
     over *                              \ # row pointers 
     swap +                              \ plus # matrix pointers
-    4*                                  \ bytes
+    n*                                  \ bytes
     t>p +                               \ plus data
 ;
 
@@ -864,7 +864,7 @@ alias _memsptr _memalloc \ for consistency (?)
     2 pick 2 pick * * 2* p>t            \ data bytes 2 is data size
     over *                              \ # row pointers 
     swap +                              \ plus # matrix pointers
-    4*                                  \ bytes
+    n*                                  \ bytes
     t>p +                               \ plus data
 ;
 
@@ -872,7 +872,7 @@ alias _memsptr _memalloc \ for consistency (?)
     2 pick 2 pick * * p>t               \ data bytes
     over *                              \ # row pointers 
     swap +                              \ plus # matrix pointers
-    4*                                  \ bytes
+    n*                                  \ bytes
     t>p +                               \ plus data
 ;
 
@@ -914,17 +914,17 @@ alias _memsptr _memalloc \ for consistency (?)
     lvar ncol ncol !
     lvar nrow nrow !
     lvar nmat nmat !
-    lvar raddr nmat @ 4* addr @ + raddr !  \ start of row pointer arrays
-    lvar daddr nmat @ nrow @ * 4* raddr @ + daddr !  \ data offset
+    lvar raddr nmat @ n* addr @ + raddr !  \ start of row pointer arrays
+    lvar daddr nmat @ nrow @ * n* raddr @ + daddr !  \ data offset
     nmat @ 0 do
         \ first do matrix pointers
-        i nrow @ * 4* raddr @  +    \ addr of ith row ptr array
+        i nrow @ * n* raddr @  +    \ addr of ith row ptr array
         addr @ i na+ !              \ put it in matrix ptr array
         \ now do row pointers
         nrow @ 0 do
             j nrow @ ncol @ * *     \ offset to jth matrix
             i ncol @ * +            \ add'l offset to ith row
-            4* daddr @ +            \ 4 is data size
+            n* daddr @ +            \ 4 is data size
             addr @ j na+ @ i na+ !  \ addr of j,ith row
         loop
     loop
@@ -936,11 +936,11 @@ alias _memsptr _memalloc \ for consistency (?)
     lvar ncol ncol !
     lvar nrow nrow !
     lvar nmat nmat !
-    lvar raddr nmat @ 4* addr @ + raddr !  \ start of row pointer arrays
-    lvar daddr nmat @ nrow @ * 4* raddr @ + daddr !  \ data offset
+    lvar raddr nmat @ n* addr @ + raddr !  \ start of row pointer arrays
+    lvar daddr nmat @ nrow @ * n* raddr @ + daddr !  \ data offset
     nmat @ 0 do
         \ first do matrix pointers
-        i nrow @ * 4* raddr @  +    \ addr of ith row ptr array
+        i nrow @ * n* raddr @  +    \ addr of ith row ptr array
         addr @ i na+ !              \ put it in matrix ptr array
         \ now do row pointers
         nrow @ 0 do
@@ -958,11 +958,11 @@ alias _memsptr _memalloc \ for consistency (?)
     lvar ncol ncol !
     lvar nrow nrow !
     lvar nmat nmat !
-    lvar raddr nmat @ 4* addr @ + raddr !  \ start of row pointer arrays
-    lvar daddr nmat @ nrow @ * 4* raddr @ + daddr !  \ data offset
+    lvar raddr nmat @ n* addr @ + raddr !  \ start of row pointer arrays
+    lvar daddr nmat @ nrow @ * n* raddr @ + daddr !  \ data offset
     nmat @ 0 do
         \ first do matrix pointers
-        i nrow @ * 4* raddr @  +    \ addr of ith row ptr array
+        i nrow @ * n* raddr @  +    \ addr of ith row ptr array
         addr @ i na+ !              \ put it in matrix ptr array
         \ now do row pointers
         nrow @ 0 do
@@ -2012,7 +2012,8 @@ defer direxec
 
 \ FTERMINAL description
 begstruct
-    +offset  t_fname     28     \ name of terminal  
+    +offset  t_fname     28     \ name of terminal
+    Nsize Isize - +             \ pad to Normal alignment
     +offset  fdel_char   Psize  \ function to delete previous char  
     +offset  fdel_line   Psize  \ delete to the end of the current line  
     +offset  fforw_curs  Psize  \ move cursor forward  
@@ -2026,14 +2027,14 @@ begstruct
     +offset  fclr_scr    Psize  \ clear screen  
     +offset  fscrnprt    Psize  \ writes a string to the screen at cur curs 
     +offset  fscrnput    Psize  \ writes a char "              "            
-    +offset  fscrnflsh   Psize  \ flushes the buffers to the screen if appl  
-    +offset  t_ncols     Isize  \ how many cols  
-    +offset  t_nrows     Isize  \ how many rows  
-    +offset  t_curx      Isize  \ saved x coor  
-    +offset  t_cury      Isize  \ saved y coor  
-    +offset  t_kpstate   Isize  \ saved keypad state  
-    +offset  ansiflg     Isize  \ flag for functions implemented as ESC seq 
-    +offset  stdoflg     Isize  \ flag for OK to write on stdout  
+    +offset  fscrnflsh   Psize  \ flushes the buffers to the screen if appl
+    +offset  t_ncols     Nsize  \ how many cols  
+    +offset  t_nrows     Nsize  \ how many rows  
+    +offset  t_curx      Nsize  \ saved x coor  
+    +offset  t_cury      Nsize  \ saved y coor  
+    +offset  t_kpstate   Nsize  \ saved keypad state  
+    +offset  ansiflg     Nsize  \ flag for functions implemented as ESC seq 
+    +offset  stdoflg     Nsize  \ flag for OK to write on stdout  
     +offset  t_init      Psize  \ term init routine if any   
     +offset  t_close     Psize  \ term close routine if any   
 Sizfterm endstchk   \ m_fterm, struct FTERMINAL

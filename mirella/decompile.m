@@ -333,8 +333,8 @@ create lname 10 allot      12 constant Ldelem    variable colbase
 ;
 
 : l.id ( cfa -- ) \ prints name of local variable
-    dup 4- @ ['] (lvar @ = if   \ is it a local var ? 
-        4+ p>t
+    dup n- @ ['] (lvar @ = if   \ is it a local var ? 
+        n+ p>t
 \       ( debug) ." (lcfa: " t@ . ." ) "
         nlvar @ 0 ?do
             localdic @ Ldelem i * + 

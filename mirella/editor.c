@@ -112,7 +112,7 @@ static char save_buffer[NKILL][HSIZE + 1], /* Buffer for ^K/^Y */
 	    undo_buff[USIZE];		/* buffer for deleted characters */
 FTERMINAL m_fterm;
 char *pmfterm = (char *)(&m_fterm);     /* for Mirella. thanks, rhl */
-int sizfterm = sizeof(FTERMINAL);       /* "" */
+normal sizfterm = sizeof(FTERMINAL);       /* "" */
 FTERMINAL *mftarray[16];
 int m_nfterm = 1;			/* number of fterminals;
 					   only one (ansi) initially */
@@ -134,8 +134,8 @@ extern int interrupt;
 int plength;				/* num. of printing chars in prompt */
 extern TERMINAL m_term;			/* describe my terminal */
 char *pmterm = (char *)(&m_term);       /* for Mirella */
-int sizterm  = sizeof(TERMINAL);        /*  "" */
-int termconssize = TERM_SIZE;           /* length of control strings, 12 */
+normal sizterm  = sizeof(TERMINAL);	/*  "" */
+normal termconssize = TERM_SIZE;	/* length of control strings, 12 */
 static void delete_to_eol(),		/* delete to end of line */
   	    delay(),			/* delay for x msec */
 	    del_character(),

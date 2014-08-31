@@ -52,7 +52,7 @@
  * units of 1 normal.
  */
 
-#define ALIGN_BOUNDARY (4)  
+#define ALIGN_BOUNDARY sizeof(normal)  
                             /* Good number for 68000 */
 #define MEMPAGE 2048        
                             /* should be at least as big as the page size

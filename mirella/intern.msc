@@ -28,6 +28,7 @@ f	reset-vocabs	reset_vocabs		i
 \
 v	use_editor	use_editor		i
 v	verbose		verbose			i
+c	SizeofN		sizeofN			i
 \ functions--from the math library
 f	sin		sin			f @ f
 f	cos		cos			f @ f
@@ -584,7 +585,7 @@ f    isupper        m_isupper              i * i
 f    iscntr         m_iscntrl              i * i
 f    strtolower     strtolower             p * p
 f    strtoupper     strtoupper             p * p
-#define C_M 160
+#define C_M 161
 \Expect (C != M) == C_M
 \Expect typeless == 1
 \Expect no_size == 0

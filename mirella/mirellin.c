@@ -72,7 +72,7 @@ register token_t *ip;
              token_t    *irtn_stk[RSSIZE];   
 
   /* init return stack pointer at each entry into the inner interpreter */
-  rp = &irtn_stk[RSSIZE-4];    
+  rp = &irtn_stk[RSSIZE - sizeof(normal)];    
 
   while(1) {
     token = *(token_t **)ip++;
@@ -429,13 +429,13 @@ abort:
 	continue;
 
 /* 32-bit utils */
-    case FOUR_PLUS:     tos += 4; continue;
-    case FOUR_MINUS:    tos -= 4; continue;
-    case FOUR_TIMES:    tos <<= 2; continue;
+    case FOUR_PLUS:     tos += sizeof(normal); continue;
+    case FOUR_MINUS:    tos -= sizeof(normal); continue;
+    case FOUR_TIMES:    tos <<= (sizeof(normal) == 4 ? 2 : 4); continue;
 #ifndef LOGCSHIFT
-    case FOUR_DIVIDE:   tos >>= 2; continue;
+    case FOUR_DIVIDE:   tos >>= (sizeof(normal) == 4 ? 2 : 4); continue;
 #else
-    case FOUR_DIVIDE:   tos /= 4;  continue;
+    case FOUR_DIVIDE:   tos /= sizeof(normal);  continue;
 #endif
     case TWO_TIMES:     tos <<= 1; continue;
     case STAR_SLASH:    scr = k_pop; lscr = (long)tos * (long)(*sp++);

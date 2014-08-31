@@ -1,6 +1,7 @@
 /*
  * This is a minimal Mirella main programme
  */
+#include <assert.h>
 #include "mirella.h"
 
 int
@@ -8,6 +9,8 @@ mir_main(argc,argv)
 int argc;
 char *argv[];
 {
+   assert(sizeof(void *) == sizeof(normal)); /* has to be true for the forth stack to work */
+
     mirelinit(argc,argv);
 /*
  * application initialization code here

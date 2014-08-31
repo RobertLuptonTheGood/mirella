@@ -3,7 +3,10 @@
 \ 040709 added octal. `ff' is a forth word (!?) which takes a stack entry,
 \ so the byte/word stuff in ~lines 100 will not work. Where is it?
 
-
+: n+ SizeofN + ;
+: n- SizeofN - ;
+: n* SizeofN * ;
+: n/ SizeofN / ;
 
 : decimal 10 base ! ;
 : hex 16 base ! ;
@@ -12,7 +15,7 @@
 : forth83 ;
 : [ 0 state ! ; immediate
 : ] 1 state ! ;
-: >body 4+ ;
+: >body n+ ;
 : cword word 1+ ;       \ address of cstring in word buffer
 
 decimal
@@ -20,9 +23,9 @@ decimal
 32 constant bl
 -1 constant true
 0 constant false
-4 constant /n
-4 constant /token
-4 constant #align
+SizeofN constant /n                     \ what's the mnemonic for /n ?
+SizeofN constant /token
+SizeofN constant #align
 
 hex create estr 69646504 , 00000074 ,
 \ edit string
@@ -64,10 +67,10 @@ decimal
 : within (s n1 min max+1 -- f )
    1- between
 ;
-: na1+ 4+ ;
-: na+ 4* + ;
-: na- 4* - ;
-: ta+ 4* + ;
+: na1+ n+ ;
+: na+ n* + ;
+: na- n* - ;
+: ta+ n* + ;
 
 \ in token@, if contents of addr is a token primitive, pushes the corresp.
 \       cfa; else just returns the contents of addr (does an @)
@@ -342,7 +345,7 @@ defer where
 : f.s fdepth dup if 0 do fdepth i - 1- fpick f. loop 
                  else ." Floating Stack Empty" then ;
 
-: tdepth tsp0 @ tsp@ - 4/ ;
+: tdepth tsp0 @ tsp@ - n/ ;
 : t.s tdepth dup if 0 do tsp0 @ i 1+ na-  @ . loop 
                  else ." Temporary Stack Empty" then ;
 
@@ -393,7 +396,7 @@ hex
 ;
 
 ( address manipulation )
-alias la1+ 4+ 
+alias la1+ n+ 
 alias ca1+ 1+
 alias wa1+ 2+
 alias sa1+ 2+
@@ -402,7 +405,7 @@ alias ca+  +
 alias wa+ sa+
 alias la+ na+
 : sa- 2* - ;
-alias na1- 4-   
+alias na1- n-   
 alias sa1- 2- 
 alias s+! w+!
 

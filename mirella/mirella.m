@@ -2028,15 +2028,16 @@ begstruct
     +offset  fscrnprt    Psize  \ writes a string to the screen at cur curs 
     +offset  fscrnput    Psize  \ writes a char "              "            
     +offset  fscrnflsh   Psize  \ flushes the buffers to the screen if appl
-    +offset  t_ncols     Nsize  \ how many cols  
-    +offset  t_nrows     Nsize  \ how many rows  
-    +offset  t_curx      Nsize  \ saved x coor  
-    +offset  t_cury      Nsize  \ saved y coor  
-    +offset  t_kpstate   Nsize  \ saved keypad state  
-    +offset  ansiflg     Nsize  \ flag for functions implemented as ESC seq 
-    +offset  stdoflg     Nsize  \ flag for OK to write on stdout  
+    +offset  t_ncols     Isize  \ how many cols
+    +offset  t_nrows     Isize  \ how many rows
+    +offset  t_curx      Isize  \ saved x coor
+    +offset  t_cury      Isize  \ saved y coor
+    +offset  t_kpstate   Isize  \ saved keypad state
+    +offset  ansiflg     Isize  \ flag for functions implemented as ESC seq
+    +offset  stdoflg     Isize  \ flag for OK to write on stdout
     +offset  t_init      Psize  \ term init routine if any   
     +offset  t_close     Psize  \ term close routine if any   
+    swap nceil swap             \ pad to n*sizeof(normal) alignment
 Sizfterm endstchk   \ m_fterm, struct FTERMINAL
 
 \ TERMINAL description.
@@ -2093,7 +2094,7 @@ create fline 260 allot
 \ stevens.doc has 13 lines 
 : smessage
     lvar nrow  
-    m_fterm t_nrows @ nrow !
+    m_fterm t_nrows i@ nrow !
     ["] stevens.doc" mcfname dup if 
         nrow @ 13 - 2/ 8 + 0 do cr loop        
         _filetype 
@@ -2131,7 +2132,7 @@ create fline 260 allot
 
 : smessages
     lvar nrow  
-    m_fterm t_nrows @ nrow !
+    m_fterm t_nrows i@ nrow !
     cr
     ["] stevens.doc" mcfname dup if 
         _filetype 

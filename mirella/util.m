@@ -8,6 +8,9 @@
 : n* SizeofN * ;
 : n/ SizeofN / ;
 
+: nceil ( i.i -- ni.i where ni is the nearest multiple of SizeofN >= i )
+   dup n/ swap SizeofN mod if 1+ then n* ;
+
 : decimal 10 base ! ;
 : hex 16 base ! ;
 : octal 8 base ! ;

@@ -199,8 +199,6 @@ struct d_e_t {
 
 /* number of hashing threads. Must be power of 2 */
 #define NTHREADS 8  
-/* NTHREADS-1 */
-#define NTM1 7
 
 typedef struct voc_t {
     dic_en_t     *last_word[NTHREADS];   /* hashing */
@@ -210,7 +208,7 @@ typedef struct voc_t {
 
 /* following definition for hash is very (maybe too) simple. */
    
-#define hash(voc,str) (&((voc)->last_word[(*((str)+1) + *((str)+2)) & NTM1] ))
+#define hash(voc,str) (&((voc)->last_word[(str[1] + str[2]) & (NTHREADS - 1)] ))
 
 /* global variables in mirella.c */
 /* memory map and dictionary */

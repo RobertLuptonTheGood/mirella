@@ -194,7 +194,9 @@
 #define QT_LCREATE    188
 #define ROLL          189
 #define FROLL         190
-#define NEXT_PRIM     191
+#define IFETCH        191
+#define ISTORE        192
+#define NEXT_PRIM     193               // must be last
 #define MAXPRIM       300
 
 /*secondary tokens -- do not muck with this line; is marker for makemprim */

@@ -135,6 +135,8 @@ doprim:
     case C_STORE:    *(char *)  tos = *sp++; tos = *sp++;    continue;
     case W_STORE:    *(short *)   tos = *sp++; tos = *sp++;    continue;
     case PLUS_STORE: *(normal *) tos += *sp++; tos = *sp++;    continue;
+    case IFETCH:     tos = *(int *)tos;  continue;
+    case ISTORE:     *(int *)tos = *sp++; tos = *sp++;    continue;
 
     case CMOVE:
         ascr = (char *)*sp++;

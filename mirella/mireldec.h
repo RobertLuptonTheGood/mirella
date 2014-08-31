@@ -706,6 +706,8 @@ void xscale P_ARGS(( void ));
 void ylabel P_ARGS(( char *sly ));
 void yscale P_ARGS(( void ));
 
+void strcpy_safe P_ARGS((char *restrict s1, const char *restrict s2 ));
+
 #ifdef DEF_FILE
 #  undef FILE
 #  undef DEF_FILE

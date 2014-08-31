@@ -91,7 +91,7 @@ int pflg;                    /* do you want a prompt? passed on to edit_line */
 	    hptr->prev = free_list;	/* delete this node */
 	    free_list = hptr;
 	    hptr = temp;
-	    (void)strcpy(current,hptr->line);
+	    strcpy_safe(current,hptr->line);
 	 }
 	 break;
        case ('g' | '\200') :		/* go to line n */
@@ -103,7 +103,7 @@ int pflg;                    /* do you want a prompt? passed on to edit_line */
 	 } else {
 	    hptr = temp;
 	    erase_str(current,HSIZE);
-	    (void)strcpy(current,hptr->line);
+	    strcpy_safe(current,hptr->line);
 	 }
 	 break;
        case CTRL_M :			/* accept current command */
@@ -139,7 +139,7 @@ int pflg;                    /* do you want a prompt? passed on to edit_line */
 	 erase_str(current,HSIZE);
 	 if(hptr->next != NULL) {
 	    hptr = hptr->next;
-	    (void)strcpy(current,hptr->line);
+	    strcpy_safe(current,hptr->line);
 	 }
 	 break;
        case CTRL_P:			/* previous command */
@@ -148,7 +148,7 @@ int pflg;                    /* do you want a prompt? passed on to edit_line */
 	 } else {
 	    erase_str(current,HSIZE);
 	    hptr = hptr->prev;
-	    (void)strcpy(current,hptr->line);
+	    strcpy_safe(current,hptr->line);
 	 }
 	 break;
        case CTRL_R:			/* reverse search */
@@ -161,20 +161,20 @@ int pflg;                    /* do you want a prompt? passed on to edit_line */
 	    putchar(CTRL_G);
 	 } else {
 	    hptr = temp;
-	    (void)strcpy(current,hptr->line);
+	    strcpy_safe(current,hptr->line);
 	 }
 	 break;
        case '<' | '\200':		/* first command */
 	 erase_str(current,HSIZE);
 	 hptr = first;
-	 (void)strcpy(current,hptr->line);
+	 strcpy_safe(current,hptr->line);
 	 break;
        case '>' | '\200':		/* last command */
 	 erase_str(current,HSIZE);
 	 if(last != NULL && last->prev != NULL) {
 	    hptr = last->prev;
 	 }
-	 (void)strcpy(current,hptr->line);
+	 strcpy_safe(current,hptr->line);
 	 break;
        default:
 	 putchar(CTRL_G);
@@ -382,7 +382,7 @@ int l1,l2;				/* use history commands l1-l2 */
  */
    mptr = macro;
    for(hptr = hl1;;hptr = hptr->next) {
-      (void)strcpy(mptr,hptr->line);
+      strcpy_safe(mptr,hptr->line);
       len = strlen(hptr->line);
       mptr += len;
       if(len > 0) {

@@ -223,4 +223,15 @@ char string[];
         erret(NULL);
     }
 }
-            
+
+/*****************************************************************************/
+/*
+ * Some recent versions of libc call strcp_chk which aborts if s1 == s2
+ */
+void
+strcpy_safe(char *restrict s1, const char *restrict s2)
+{
+   if (s1 != s2) {
+      (void)strcpy(s1, s2);
+   }
+}

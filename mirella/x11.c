@@ -74,6 +74,13 @@ static char *next_word P_ARGS ((char * ));
 /*
  * These are used to describe our way of dealing with X
  */
+typedef struct {			/* a ZVirtual pixel */
+   char r;
+   char g;
+   char b;
+   char pad;
+} RGBPixel;
+
 static XColor back_color;		/* colour of cursor background */
 static int backpix;                     /* pixel value for background */
 static int border_width = 2;		/* as it says */
@@ -98,7 +105,6 @@ static int hand_XError();
 static int hand_XIOError();
 static int h_font = 0,w_font;		/* height and (mean) width of chars */
 static unsigned int ncol;		/* number of colours we got */
-static unsigned long *pixels;		/* pixel values */
 static Window root;			/* root window */
 static void size_x11();
 static void to_device_coords();		/* convert from file coordinates */
@@ -150,9 +156,9 @@ x11setup(s)
 char *s;
 {
    char *backcolor = "black";		/* name of background colour */
-   char *disp_name = NULL;		/* name of display */
    char *cursor_backcolor = NULL;	/* background colour of cursor */
    char *cursor_forecolor = NULL;	/* foreground colour of cursor */
+   char *disp_name = NULL;		/* name of display */
    XEvent event;
    XFontStruct *font_info;
    char *forecolor = "green";		/* name of foreground colour */
@@ -164,7 +170,6 @@ char *s;
       0xaa, 0xaa, 0x55, 0x55, 0xaa, 0xaa, 0x55, 0x55,   /* 1010101010101010 */
       0xaa, 0xaa, 0x55, 0x55, 0xaa, 0xaa, 0x55, 0x55};  /* 0101010101010101 */
    XSizeHints hints;                    /* hints for window manager */
-   int i;
    static char icon_bitmap[] = {
 #     include "icon.h"
    };
@@ -173,9 +178,6 @@ char *s;
    int icon_x,icon_y;			/* offset of icon */
    unsigned long mask;                  /* mask for attributes */
    char *name = PROGNAME;		/* name of application */
-   int ncol_in_visual;			/* number of colours in the visual */
-   static unsigned long pixels_s[256];	/* storage for pixel values */
-   unsigned long plane_mask;		/* unused */
    char *ptr;				/* pointer to str */
    int root_height;			/* height of display */
    int root_width;			/* width of display */
@@ -183,8 +185,6 @@ char *s;
    int sync = 0;			/* Synchronise Errors */
    char *title = PROGNAME;		/* title of application */
    XSetWindowAttributes win_atts;       /* struct to g/set window attributes */
-   XVisualInfo template;		/* what I desire in a visual */
-   XVisualInfo *vinfos;			/* list of the desired visual info */
    XWMHints wmhints;			/* More hints for WM */
    int xoff,yoff;			/* position of window */
    int x_position = 0;			/* is window position specified? */
@@ -338,138 +338,27 @@ char *s;
 
       visual = DefaultVisual(disp,screen);
       cmap = DefaultColormap(disp,screen);
-/*
- * Look for a pseudo-colour visual (we might be able to use the default)
- */
-      template.class = PseudoColor;
-      mask = VisualClassMask;
 
-      if((vinfos = XGetVisualInfo(disp,mask,&template,&i)) == NULL) {
-	 error("\nCan't find a PseudoColor visual");
-	 ncol_in_visual = NCOL;		/* let's guess */
+      XVisualInfo vinfo;
+      if (XMatchVisualInfo(disp, screen, 24, TrueColor, &vinfo)) { /* check that we have TrueColor */
+	 ncol = NCOL;
       } else {
-	 while(--i >= 0) {
-	    if(vinfos[i].colormap_size >= Ncol) {
-	       break;
-	    }
-	 }
-	 if(i < 0) {			/* couldn't find one large enough */
-	    error("\nCan't find a large enough PseudoColor visual");
-	    i = 0;
-	 }
-	 visual = vinfos[i].visual;
-	 ncol_in_visual = vinfos[i].colormap_size;
-	 XFree((char *)vinfos);
+	 fprintf(stderr, "\nUnable to find 24-bit TrueColor display");
+	 return(-1);
       }
 /*
- * Allocate Colourmap (it'll be filled by a call to x11set_lookup)
- *
- * Also try to get the desired back/foreground, but don't grab r/w cells
- * for them * if we are using the default colour map. While we are about
- * it, try to get colours for cursors if so requested
+ * set for/bkgnd for display and cursor--don't think I need 
  */
-      ncol = Ncol;			/* try the default cmap first */
-      pixels = pixels_s;
-      if(XAllocColorCells(disp,cmap,False,&plane_mask,0,pixels,ncol)) {
-	 if(XParseColor(disp,cmap,backcolor,&back_color) &&
-	    XAllocColor(disp,cmap,&back_color)) {
-	    backpix = back_color.pixel;
-	 } else {
-	    backpix = BlackPixel(disp,screen);
-	 }
-	 if(XParseColor(disp,cmap,forecolor,&fore_color) &&
-	    XAllocColor(disp,cmap,&fore_color)) {
-	    forepix = fore_color.pixel;
-	 } else {
-	    forepix = WhitePixel(disp,screen);
-	 }
-	 
-	 if(cursor_backcolor != NULL) {
-	    if(!XParseColor(disp,cmap,cursor_backcolor,&back_color) ||
-	       !XAllocColor(disp,cmap,&back_color)) {
-	       fprintf(stderr,"Can't get cursor background: %s\n",
-		       cursor_backcolor);
-	    }
-	 }
-	 if(cursor_forecolor != NULL) {
-	    if(!XParseColor(disp,cmap,cursor_forecolor,&fore_color) ||
-	       !XAllocColor(disp,cmap,&fore_color)) {
-	       fprintf(stderr,"Can't get cursor foreground: %s\n",
-		       cursor_forecolor);
-	    }
-	 }
-      } else {
-	 fprintf(stderr,
-		"Can't allocate %d colours: creating a new colour map\n",ncol);
-	 if((cmap = XCreateColormap(disp,root,visual,AllocNone)) == 0) {
-	    fprintf(stderr,"Can't allocate PsuedoColor colour map\n");
-	    cmap = DefaultColormap(disp,screen);
-	 }
-
-	 if(ncol_in_visual > sizeof(pixels_s)/sizeof(pixels_s[0])) {
-	    ncol_in_visual = sizeof(pixels_s)/sizeof(pixels_s[0]);
-	 }
-	 ncol = ncol_in_visual;		/* now we want them all so as to
-					   try to preserve the lower ones */
-	 for(;ncol > 0;ncol--) {
-	    if(XAllocColorCells(disp,cmap,False,&plane_mask,0,pixels,ncol)
-									!= 0) {
-	       break;			/* success */
-	    }
-	 }
-	 if(ncol == 0) {
-	    fprintf(stderr,"Can't allocate colourmap\n");
-	    return(-1);
-	 } else if(ncol < Ncol + 4) {
-	    fprintf(stderr,"I can only allocate %d colours; sorry\n",ncol);
-	    XFreeColors(disp,cmap,pixels,ncol,plane_mask);
-	    XFreeColormap(disp,cmap);	      
-	    return(-1);
-	 }
-	 
-	 for(i = 0;i < ncol - Ncol;i++) { /* copy some of default cmap */
-	    colors[i].pixel = i;
-	 }
-	 i = ncol - Ncol;
-	 if(i > Ncol) i = Ncol;
-	 XQueryColors(disp,DefaultColormap(disp,screen),colors,i);
-	 XStoreColors(disp,cmap,colors,i);
-	 
-	 pixels += ncol - Ncol;
-	 ncol = Ncol;
-
-	 if(XParseColor(disp,cmap,backcolor,&back_color)) {
-	    backpix = back_color.pixel = pixels[-1];
-	    XStoreColor(disp,cmap,&back_color);
-	 } else {
-	    backpix = BlackPixel(disp,screen);
-	 }
-	 if(XParseColor(disp,cmap,forecolor,&fore_color)) {
-	    forepix = fore_color.pixel = pixels[-2];
-	    XStoreColor(disp,cmap,&fore_color);
-	 } else {
-	    forepix = WhitePixel(disp,screen);
-	 }
-	 
-	 if(cursor_backcolor != NULL) {
-	    if(XParseColor(disp,cmap,cursor_backcolor,&back_color)) {
-	       back_color.pixel = pixels[-3];
-	       XStoreColor(disp,cmap,&back_color);
-	    } else {
-	       fprintf(stderr,"Can't get cursor background: %s\n",
-		       cursor_backcolor);
-	    }
-	 }
-	 if(cursor_forecolor != NULL) {
-	    if(XParseColor(disp,cmap,cursor_forecolor,&fore_color)) {
-	       fore_color.pixel = pixels[-4];
-	       XStoreColor(disp,cmap,&fore_color);
-	    } else {
-	       fprintf(stderr,"Can't get cursor foreground: %s\n",
-		       cursor_forecolor);
-	    }
-	 }
+      XColor screenXColor;
+      if(!XLookupColor(disp, cmap, backcolor, &back_color, &screenXColor)) {
+	 back_color.red = back_color.green = back_color.blue = 0;
       }
+      backpix = (back_color.red >> 8) + 256*((back_color.green >> 8) + 256*(back_color.blue >> 8));
+
+      if(!XLookupColor(disp, cmap, forecolor, &fore_color, &screenXColor)) {
+	 fore_color.red = fore_color.green = fore_color.blue = 255;
+      }
+      forepix = (fore_color.red >> 8) + 256*((fore_color.green >> 8) + 256*(fore_color.blue >> 8));
 /*
  * Create fonts and GC's and such
  */
@@ -496,22 +385,13 @@ char *s;
       gc = XCreateGC(disp,root,mask,&gc_values);
       gc_values.foreground = backpix;
       erase_gc = XCreateGC(disp,root,mask,&gc_values);
-      gc_values.foreground = fore_color.pixel;
-      gc_values.background = back_color.pixel;
+      gc_values.foreground = forepix;
+      gc_values.background = backpix;
       graph_gc = XCreateGC(disp,root,mask,&gc_values);
-      gc_values.foreground = 255;
+      gc_values.foreground = -1;
       gc_values.function = GXxor;
       mask |= GCFunction;
       graph_xor_gc = XCreateGC(disp,root,mask,&gc_values);
-/*
- * Set colourmap to gray
- */
-      for(i = 0;i < ncol;i++) {
-	 colors[i].pixel = pixels[i];
-	 colors[i].flags = DoRed | DoGreen | DoBlue;
-	 colors[i].red = colors[i].green = colors[i].blue = i*65535/(ncol - 1);
-      }
-      XStoreColors(disp,cmap,colors,ncol);
 
       x11set_cursor(0);
 
@@ -702,8 +582,6 @@ char *s;
    unsigned long mask;                  /* mask for attributes */
    char *name = PROGNAME;		/* name of application */
    int ncol_in_visual;			/* number of colours in the visual */
-   static unsigned long pixels_s[256];	/* storage for pixel values */
-   unsigned long plane_mask;		/* unused */
    char *ptr;				/* pointer to str */
    int root_height;			/* height of display */
    int root_width;			/* width of display */
@@ -894,137 +772,40 @@ char *s;
 	 ncol_in_visual = vinfos[i].colormap_size;
 	 XFree((char *)vinfos);
       }
-     
-/*
- * Allocate Colourmap (it'll be filled by a call to x11set_lookup)
- *
- * Also try to get the desired back/foreground, but don't grab r/w cells
- * for them * if we are using the default colour map. While we are about
- * it, try to get colours for cursors if so requested
- */
-      ncol = Ncol;			/* try the default cmap first */
-      pixels = pixels_s;
-      if(XAllocColorCells(disp,cmap,False,&plane_mask,0,pixels,ncol)) {
-	 if(XParseColor(disp,cmap,backcolor,&back_color) &&
-	    XAllocColor(disp,cmap,&back_color)) {
-	    backpix = back_color.pixel;
-	 } else {
-	    backpix = BlackPixel(disp,screen);
-	 }
-	 if(XParseColor(disp,cmap,forecolor,&fore_color) &&
-	    XAllocColor(disp,cmap,&fore_color)) {
-	    forepix = fore_color.pixel;
-	 } else {
-	    forepix = WhitePixel(disp,screen);
-	 }
-	 
-	 if(cursor_backcolor != NULL) {
-	    if(!XParseColor(disp,cmap,cursor_backcolor,&back_color) ||
-	       !XAllocColor(disp,cmap,&back_color)) {
-	       fprintf(stderr,"Can't get cursor background: %s\n",
-		       cursor_backcolor);
-	    }
-	 }
-	 if(cursor_forecolor != NULL) {
-	    if(!XParseColor(disp,cmap,cursor_forecolor,&fore_color) ||
-	       !XAllocColor(disp,cmap,&fore_color)) {
-	       fprintf(stderr,"Can't get cursor foreground: %s\n",
-		       cursor_forecolor);
-	    }
-	 }
-      } else {
-	 fprintf(stderr,
-		"Can't allocate %d colours: creating a new colour map\n",ncol);
-	 if((cmap = XCreateColormap(disp,root,visual,AllocNone)) == 0) {
-	    fprintf(stderr,"Can't allocate PsuedoColor colour map\n");
-	    cmap = DefaultColormap(disp,screen);
-	 }
-         /* cmap is X pointer to ncw color map if successful */
-         
-         /* just defensive */
-	 if(ncol_in_visual > sizeof(pixels_s)/sizeof(pixels_s[0])) {
-	    ncol_in_visual = sizeof(pixels_s)/sizeof(pixels_s[0]);
-	 }
-	 
-	 ncol = ncol_in_visual;		/* now we want them all so as to
-					   try to preserve the lower ones */
-	 for(;ncol > 0;ncol--) {
-	    if(XAllocColorCells(disp,cmap,False,&plane_mask,0,pixels,ncol)
-	       != 0) {
-	       break;			/* success */
-	    }
-	 }
-
-/*DB*/ mprintf("\nXAllocColorCells returns ncol = %d at first success\n",ncol);
-	
-	 /* what the hell does this accomplish??? Should it not
-	  * always return ncol_in_visual???  
-	  */
-	 
-	 if(ncol == 0) {
-	    fprintf(stderr,"Can't allocate colourmap\n");
-	    return(-1);
-	 } else if(ncol < Ncol + 4) {
-	    fprintf(stderr,"I can only allocate %d colours; sorry\n",ncol);
-	    XFreeColors(disp,cmap,pixels,ncol,plane_mask);
-	    XFreeColormap(disp,cmap);	      
-	    return(-1);
-	 }
-	 
-	 /* at this point, ncol is the number of colors we have; it may
-	  * be between Ncol+4 and NCOL. If there are extra ones, we
-	  * want to preserve the low original ones if possible.
-	  */
-	 
-	 for(i = 0;i < ncol - Ncol;i++) { /* copy some of default cmap */
-	    colors[i].pixel = i;  /* just the index of the pixel??  Why does
-	                           * this work?? */
-	 }
-	 i = ncol - Ncol;   /* Ncol + 4? */
-	 if(i > Ncol) i = Ncol;
-	 XQueryColors(disp,DefaultColormap(disp,screen),colors,i);
-	 XStoreColors(disp,cmap,colors,i);
-	 
-	 pixels += ncol - Ncol;  /* Ncol+4  ? */
-	 ncol = Ncol;
-	 
 /*
  * set for/bkgnd for display and cursor--don't think I need 
- */
- 
-	 if(XParseColor(disp,cmap,backcolor,&back_color)) {
-	    backpix = back_color.pixel = pixels[-1];
+ */ 
+      if(XParseColor(disp,cmap,backcolor,&back_color)) {
+	 backpix = back_color.pixel = -1;
+	 XStoreColor(disp,cmap,&back_color);
+      } else {
+	 backpix = BlackPixel(disp,screen);
+      }
+      if(XParseColor(disp,cmap,forecolor,&fore_color)) {
+	 forepix = fore_color.pixel = -2;
+	 XStoreColor(disp,cmap,&fore_color);
+      } else {
+	 forepix = WhitePixel(disp,screen);
+      }
+	 
+      if(cursor_backcolor != NULL) {
+	 if(XParseColor(disp,cmap,cursor_backcolor,&back_color)) {
+	    back_color.pixel = -3;
 	    XStoreColor(disp,cmap,&back_color);
 	 } else {
-	    backpix = BlackPixel(disp,screen);
-	 }
-	 if(XParseColor(disp,cmap,forecolor,&fore_color)) {
-	    forepix = fore_color.pixel = pixels[-2];
-	    XStoreColor(disp,cmap,&fore_color);
-	 } else {
-	    forepix = WhitePixel(disp,screen);
-	 }
-	 
-	 if(cursor_backcolor != NULL) {
-	    if(XParseColor(disp,cmap,cursor_backcolor,&back_color)) {
-	       back_color.pixel = pixels[-3];
-	       XStoreColor(disp,cmap,&back_color);
-	    } else {
-	       fprintf(stderr,"Can't get cursor background: %s\n",
-		       cursor_backcolor);
-	    }
-	 }
-	 if(cursor_forecolor != NULL) {
-	    if(XParseColor(disp,cmap,cursor_forecolor,&fore_color)) {
-	       fore_color.pixel = pixels[-4];
-	       XStoreColor(disp,cmap,&fore_color);
-	    } else {
-	       fprintf(stderr,"Can't get cursor foreground: %s\n",
-		       cursor_forecolor);
-	    }
+	    fprintf(stderr,"Can't get cursor background: %s\n",
+		    cursor_backcolor);
 	 }
       }
-
+      if(cursor_forecolor != NULL) {
+	 if(XParseColor(disp,cmap,cursor_forecolor,&fore_color)) {
+	    fore_color.pixel = -4;
+	    XStoreColor(disp,cmap,&fore_color);
+	 } else {
+	    fprintf(stderr,"Can't get cursor foreground: %s\n",
+		    cursor_forecolor);
+	 }
+      }
 /*
  * Create fonts and GC's and such
  */
@@ -1058,26 +839,6 @@ char *s;
       gc_values.function = GXxor;
       mask |= GCFunction;
       graph_xor_gc = XCreateGC(disp,root,mask,&gc_values);
-#if 0
-/*
- * Set colourmap to gray. This needs to be fixed.
- */
-      /* ncol is Ncol at this point, probably. Now set the colors 
-       * structure array with ncol grey values equally spaced between
-       * 0 and 65535 (?) 
-       */
-      for(i = 0;i < ncol;i++) {
-	 colors[i].pixel = pixels[i];
-	 colors[i].flags = DoRed | DoGreen | DoBlue;
-	 colors[i].red = colors[i].green = colors[i].blue = i*65535/(ncol - 1);
-      }
-      XStoreColors(disp,cmap,colors,ncol);
-
-      x11set_cursor(0);
-#endif
-
-
-
 
       icon_pixmap = XCreateBitmapFromData(disp,root,icon_bitmap,
 					  WOLF_ICON_XSIZE,WOLF_ICON_YSIZE);
@@ -1268,8 +1029,6 @@ x11close()
       XFreeGC(disp,gc);
       XFreeGC(disp,erase_gc);
       XFreeGC(disp,graph_gc);
-      /* puts("XFreeColors(disp,cmap,pixels,ncol,0);"); */
-      XFreeColors(disp,cmap,pixels,ncol,0);
       /* puts("XFreePixmap(disp,icon_pixmap);"); */
       XFreePixmap(disp,icon_pixmap);
       free((char *)xpoint);
@@ -1620,8 +1379,13 @@ toggle_blinkflag()
 void
 x11_toggle_cursor_window()
 {
+   if (!disp || !curswind) {
+      erret("Please create a display before setting its cursor window"); 
+   }
+   
    if(curswind_is_mapped) {
       XUnmapWindow(disp,curswind);
+      x11zoom(0, 0, 0);			/* refresh */
       curswind_is_mapped = 0;
    } else {
       XMapWindow(disp,curswind);
@@ -1635,12 +1399,17 @@ x11_toggle_cursor_window()
 void 
 x11_cursor_window(int flg)
 {
+    if (!disp || !curswind) {
+       erret("Please create a display before setting its cursor window"); 
+    }
+
     if(curswind_is_mapped == 0 && flg != 0) {  /* off and want on. turn on */ 
         XMapWindow(disp,curswind);
         curswind_is_mapped = 1;
     }
     if(curswind_is_mapped != 0 && flg == 0) {  /* on and want off. turn off */
         XUnmapWindow(disp,curswind);
+	x11zoom(0, 0, 0);		/* refresh */
         curswind_is_mapped = 0;
     }
 }   
@@ -1649,8 +1418,13 @@ x11_cursor_window(int flg)
 void
 x11_toggle_name_window()
 {
+    if (!disp || !namewind) {
+       erret("Please create a display before setting its name window"); 
+    }
+
    if(namewind_is_mapped) {
       XUnmapWindow(disp,namewind);
+      x11zoom(0, 0, 0);			/* refresh */
       namewind_is_mapped = 0;
    } else {
       XMapWindow(disp,namewind);
@@ -1665,9 +1439,13 @@ x11_toggle_name_window()
 void
 x11_name_window( int flg )
 {
+    if (!disp || !namewind) {
+       erret("Please create a display before setting its name window"); 
+    }
     
    if(namewind_is_mapped != 0 && flg == 0) {
       XUnmapWindow(disp,namewind);
+      x11zoom(0, 0, 0);			/* refresh */
       namewind_is_mapped = 0;
    }
    if(namewind_is_mapped == 0 && flg != 0){
@@ -1969,13 +1747,13 @@ x11set_lookup(red,green,blue,n_rgb)
 u_char red[],green[],blue[];
 int n_rgb;				/* size of red, green, blue */
 {
-   float dcol;				/* convert cmap index to rgb index */
-   float f;				/* f = [0,1] for interpolation */
-   int i,j;
-
    if(disp == NULL) {
       return(-1);
    }
+#if 0					/* not converted to TrueColor */
+   float dcol;				/* convert cmap index to rgb index */
+   float f;				/* f = [0,1] for interpolation */
+   int i,j;
 
    for(i = 0;i < ncol;i++) {
       colors[i].pixel = pixels[i];
@@ -1991,6 +1769,7 @@ int n_rgb;				/* size of red, green, blue */
       colors[i].blue = ((1 - f)*blue[j] + f*blue[j + 1])*256;
    }
    XStoreColors(disp,cmap,colors,ncol);
+#endif
    return(0);
 }
 
@@ -2014,6 +1793,7 @@ void
 
 x11_gvlt1()
 {
+#if 0					/* not converted to TrueColor */
     int i,r,g,b;
     
     if(ncol < 8){
@@ -2031,6 +1811,7 @@ x11_gvlt1()
         colors[i].blue  = 65535*b;
     }
     XStoreColors(disp,cmap,colors,8);  /* ???? this was 64?? */
+#endif
 }
 
 
@@ -2046,6 +1827,7 @@ x11_gvlt1()
 void
 x11_gvlt2()
 {
+#if 0					/* not converted to TrueColor */
     int i,r,g,b;
     
     if(ncol < 64){
@@ -2063,6 +1845,7 @@ x11_gvlt2()
         colors[i].blue  = 21845*b;  /* 21845 is 65535/3 */
     }
     XStoreColors(disp,cmap,colors,64);   /* ????? this was 8?? */
+#endif
 }
 
 /*
@@ -2165,13 +1948,13 @@ int x,y,				/* position to zoom about */
 {
    int dest_x,dest_y;			/* origin in window for display */
    int i,j;
-   char *uptr,*uend;			/* pointers to unzoomed data */
+   RGBPixel *uptr,*uend;		/* pointers to unzoomed data */
    static int hard_xcentre = 0,		/* previous centre of zoom */
    	      hard_ycentre = 0;
    int xzsize,yzsize;			/* zoomed size of image */
    int src_x,src_y;			/* origin in image for display */
-   char *zdata;				/* storage for the zoomed image */
-   char *zptr;				/* pointer to zdata */
+   RGBPixel *zdata;			/* storage for the zoomed image */
+   RGBPixel *zptr;			/* pointer to zdata */
 
    if(zoom == 0) {			/* repeat previous zoom */
       fill_palette();			/* may be trashed */
@@ -2237,12 +2020,12 @@ int x,y,				/* position to zoom about */
  * get storage for the zoomed image, if we need one
  */
       if(unzoomed_image == NULL) {	/* i.e. there is no zoomed one */
-	 if((zdata = malloc(xzsize*yzsize)) == NULL) {
+	 if((zdata = malloc(xzsize*yzsize*sizeof(RGBPixel))) == NULL) {
 	    fprintf(stderr,"Can't allocate storage for zdata\n");
 	    return(-1);
 	 }
       } else {
-	 if((zdata = realloc(image->data,xzsize*yzsize)) == NULL) {
+	 if((zdata = realloc(image->data,xzsize*yzsize*sizeof(RGBPixel))) == NULL) {
 	    fprintf(stderr,"Can't reallocate storage for zdata\n");
 	    return(-1);
 	 }
@@ -2250,7 +2033,7 @@ int x,y,				/* position to zoom about */
       
       if(hardzoom == 1) {		/* first save the unzoomed one */
 	 if((unzoomed_image = XCreateImage(disp,visual,depth,
-	      ZPixmap,0,image->data,image->width,image->height,8,0)) == NULL) {
+	      ZPixmap,0,image->data,image->width,image->height,8*sizeof(RGBPixel),0)) == NULL) {
 	    error("\nFailed to allocate unzoomed XImage");
 	    free(zdata);
 	    return(-1);
@@ -2258,36 +2041,37 @@ int x,y,				/* position to zoom about */
       }
       image->height = yzsize;
       image->width = xzsize;
-      image->bytes_per_line = image->width;
-      image->data = zdata;		/* may have been moved by realloc */
+      image->bytes_per_line = image->width*sizeof(RGBPixel);
+      image->data = (char *)zdata;		/* may have been moved by realloc */
       zptr = zdata + xzsize*(yzsize - 1);
    }
    
+   RGBPixel *udata = unzoomed_image == NULL ? NULL : (RGBPixel *)unzoomed_image->data;
    if(zoom == 1) {
       ;
    } else if(zoom == 2) {
       for(i = 0;i < yzsize;i++) {	/* complete pixels */
 	 if(i%zoom == 0) {
-	    uptr = &unzoomed_image->data[
-		(ydispsize - 1 - top_offset - i/zoom)*xdispsize + left_offset];
+	    uptr = &udata[
+	       (ydispsize - 1 - top_offset - i/zoom)*xdispsize + left_offset];
 	    uend = uptr + xzsize/zoom;
 	    while(uptr < uend) {
 	       *zptr++ = *uptr;
 	       *zptr++ = *uptr++;
 	    }
 	    for(j = xzsize%zoom;j > 0;j--) { /* fragments in x */
-		  *zptr++ = *uptr;
-	       }
-	    zptr -= 2*xzsize;
+	       *zptr++ = *uptr;
+	    }
+	    zptr -= 2*xzsize;		/* back to start of previous line */
 	 } else {
-	    memcpy(zptr,zptr + xzsize,xzsize);
-	    zptr -= xzsize;
+	    memcpy(zptr,zptr + xzsize,xzsize*sizeof(RGBPixel));
+	    zptr -= xzsize;		/* back to start of previous line */
 	 }
       }
    } else if(zoom == 4) {
       for(i = 0;i < yzsize;i++) {	/* complete pixels */
 	 if(i%zoom == 0) {
-	    uptr = &unzoomed_image->data[
+	    uptr = &udata[
 		(ydispsize - 1 - top_offset - i/zoom)*xdispsize + left_offset];
 	    uend = uptr + xzsize/zoom;
 	    while(uptr < uend) {
@@ -2299,14 +2083,14 @@ int x,y,				/* position to zoom about */
 	    }
 	    zptr -= 2*xzsize;
 	 } else {
-	    memcpy(zptr,zptr + xzsize,xzsize);
+	    memcpy(zptr,zptr + xzsize,xzsize*sizeof(RGBPixel));
 	    zptr -= xzsize;
 	 }
       }
    } else if(zoom == 8) {
       for(i = 0;i < yzsize;i++) {	/* complete pixels */
 	 if(i%zoom == 0) {
-	    uptr = &unzoomed_image->data[
+	    uptr = &udata[
 		(ydispsize - 1 - top_offset - i/zoom)*xdispsize + left_offset];
 	    uend = uptr + xzsize/zoom;
 	    while(uptr < uend) {
@@ -2320,14 +2104,14 @@ int x,y,				/* position to zoom about */
 	    }
 	    zptr -= 2*xzsize;
 	 } else {
-	    memcpy(zptr,zptr + xzsize,xzsize);
+	    memcpy(zptr,zptr + xzsize,xzsize*sizeof(RGBPixel));
 	    zptr -= xzsize;
 	 }
       }
    } else if(zoom == 16) {
       for(i = 0;i < yzsize;i++) {	/* complete pixels */
 	 if(i%zoom == 0) {
-	    uptr = &unzoomed_image->data[
+	    uptr = &udata[
 		(ydispsize - 1 - top_offset - i/zoom)*xdispsize + left_offset];
 	    uend = uptr + xzsize/zoom;
 	    while(uptr < uend) {
@@ -2345,7 +2129,7 @@ int x,y,				/* position to zoom about */
 	    }
 	    zptr -= 2*xzsize;
 	 } else {
-	    memcpy(zptr,zptr + xzsize,xzsize);
+	    memcpy(zptr,zptr + xzsize,xzsize*sizeof(RGBPixel));
 	    zptr -= xzsize;
 	 }
       }
@@ -2552,31 +2336,30 @@ char *name;				/* name to use, or NULL */
 static void
 fill_palette()
 {
-   char c;
-   char *data;
+   int c;
+   RGBPixel *data;
    int i,j;
-   /* int screen = DefaultScreen(disp);; */
    XImage *pimage;
 
-
-
-   if((data = malloc(width*PALHEIGHT)) == NULL) {
+   if((data = malloc(width*PALHEIGHT*sizeof(RGBPixel))) == NULL) {
       fprintf(stderr,"Can't allocate storage for palette\n");
       return;
    }
-   if((pimage = XCreateImage(disp,visual,depth,ZPixmap,0,data,
-			    width,PALHEIGHT,8,0)) == NULL) {
+   if((pimage = XCreateImage(disp,visual,depth,ZPixmap,0,(char *)data,
+			     width,PALHEIGHT,8*sizeof(RGBPixel),0)) == NULL) {
       error("\nFailed to allocate XImage for palette");
       free(data);
       return;
    }
 
    for(i = 0;i < width;i++) {
-      c = pixels[(int)(i*(ncol - 1)/(float)(width - 1) + 0.001)];
-      data[i] = c;
+      c = i*(ncol - 1)/(float)(width - 1) + 0.001;
+      data[i].r = c;
+      data[i].g = c;
+      data[i].b = c;
    }
    for(j = 1;j < PALHEIGHT;j++) {
-      memcpy(&data[j*width],&data[(j - 1)*width],width);
+      memcpy(&data[j*width], &data[0], width*sizeof(RGBPixel));
    }
 
    XPutImage(disp,palwind,gc,pimage,0,0,0,0,width,PALHEIGHT);
@@ -2885,8 +2668,8 @@ short **pict;				/* image to display */
 int xl,yl;				/* lower left corner in picture */
 int xh,yh;				/* upper right corner "   "  "  */
 {
-   char *data;				/* data to display (scaled) */
-   char *dbase,*dptr;			/* pointers to data */
+   RGBPixel *data;			/* data to display (scaled) */
+   RGBPixel *dbase,*dptr;		/* pointers to data */
    int dest_x,dest_y;			/* origin in window for display */
    short *ptr;
    int src_x,src_y;			/* origin in image for display */
@@ -2915,20 +2698,20 @@ int xh,yh;				/* upper right corner "   "  "  */
       }
    }
    if(image == NULL) {
-      if((data = malloc(wxsize*wysize)) == NULL) {
+      if((data = malloc(wxsize*wysize*sizeof(RGBPixel))) == NULL) {
 	 fprintf(stderr,"Can't allocate storage for data\n");
 	 return(-1);
       }
-      filln(wxsize*wysize,data,backpix);
+      filln(wxsize*wysize*sizeof(RGBPixel), (char *)data, backpix);
       
-      if((image = XCreateImage(disp,visual,depth,ZPixmap,0,data,
-					       wxsize,wysize,8,0)) == NULL) {
+      if((image = XCreateImage(disp,visual,depth,ZPixmap,0,(char *)data,
+			       wxsize,wysize, 8*sizeof(RGBPixel), 0)) == NULL) {
 	 error("\nFailed to allocate XImage");
 	 free((char *)data);
 	 return(-1);
       }
    } else {
-      data = image->data;
+      data = (RGBPixel *)image->data;
    }
 /*
  * set up the mapping of DN to pixel values
@@ -2936,8 +2719,12 @@ int xh,yh;				/* upper right corner "   "  "  */
    for(y = 0;y < yh - yl;y++) {
       ptr = &pict[yl + y][xl];
       dptr = dbase = &data[((wysize - 1 - y) - d_ylow)*wxsize + d_xlow];
-      while(dptr < dbase + xh - xl) {
-	 *dptr++ = dltable[*ptr++];
+      while(dptr < dbase + (xh - xl)) {
+	 const char v = dltable[*ptr++];
+	 dptr->r = v;
+	 dptr->g = v;
+	 dptr->b = v;
+	 ++dptr;
       }
       if(!(y%10)) {
 #if defined(pause)			/* conflict with X headers */
@@ -3048,8 +2835,8 @@ char **pict;				/* image to display */
 int xl,yl;				/* lower left corner in picture */
 int xh,yh;				/* upper right corner "   "  "  */
 {
-   char *data;				/* data to display (scaled) */
-   char *dbase,*dptr;			/* pointers to data */
+   RGBPixel *data;			/* data to display (scaled) */
+   RGBPixel*dbase,*dptr;		/* pointers to data */
    int dest_x,dest_y;			/* origin in window for display */
    char *ptr;
    int src_x,src_y;			/* origin in image for display */
@@ -3073,16 +2860,16 @@ int xh,yh;				/* upper right corner "   "  "  */
 	 fprintf(stderr,"Can't allocate storage for data\n");
 	 return(-1);
       }
-      filln(wxsize*wysize,data,backpix);
+      filln(wxsize*wysize,(char *)data,backpix);
       
-      if((image = XCreateImage(disp,visual,depth,ZPixmap,0,data,
-					       wxsize,wysize,8,0)) == NULL) {
+      if((image = XCreateImage(disp,visual,depth,ZPixmap,0,(char *)data,
+			       wxsize,wysize,8*sizeof(RGBPixel),0)) == NULL) {
 	 error("\nFailed to allocate XImage");
 	 free((char *)data);
 	 return(-1);
       }
    } else {
-      data = image->data;
+      data = (RGBPixel *)image->data;
    }
 /*
  * set up the mapping of DN to pixel values
@@ -3091,7 +2878,11 @@ int xh,yh;				/* upper right corner "   "  "  */
       ptr = &pict[yl + y][xl];
       dptr = dbase = &data[((wysize - 1 - y) - d_ylow)*wxsize + d_xlow];
       while(dptr < dbase + xh - xl) {
-	 *dptr++ = pixels[(int)(*ptr++)];  /* just copy color pixel values */
+	 int v = *ptr++;		/* just copy color pixel values */
+	 dptr->r = v;
+	 dptr->g = v;
+	 dptr->b = v;
+	 ++dptr;
       }
       if(!(y%10)) {
 #if defined(pause)			/* conflict with X headers */
@@ -3185,15 +2976,11 @@ dsp_setdlt()
    }
 
    /* mprintf("\nExecuting dsp_setdlt()"); */
-   if(ncol == 0){
-       mprintf("\nncol=0; the X display is not set up properly\n");
-       return;
-   }
    fac = (float)((int)ncol - 1)/(NCOLOR - 1);
    /*DB mprintf("\nNCOLOR=%d ncol=%d, fac=%f pixels=%d\n",NCOLOR,ncol,fac,
         pixels);*/
    for(i = 0;i < NCOLOR;i++) {
-      conv[i] = pixels[(int)(fac*i + 0.5)];
+      conv[i] = fac*i + 0.5;
    }
 
     /*DB for(i=0;i<NCOLOR;i++) mprintf(" %d",conv[i]); */

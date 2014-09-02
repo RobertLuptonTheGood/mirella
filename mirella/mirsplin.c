@@ -359,7 +359,7 @@ int ord;
     char lbuf[200];
     char *wptr[100];
     int i;
-    int err;
+    normal err;
     int ncol;
     int ntab = 2;
     float *scrxtab,*scrytab,*keepxtab,*keepytab,*keepktab;
@@ -386,7 +386,7 @@ int ord;
     nentry = 0;    
     mprintf("\nreading xcol=%d, ycol=%d from file %s",xcol,ycol,file);
     do{
-        err = (int)fgets(lbuf,199,fp);
+        err = (normal)fgets(lbuf,199,fp);
         c = lbuf[0];
         if(!err || c == '\n' || c == '\r') break;
         if(c == '\\' || c == ';' || c == '#' || c == '!') continue;  

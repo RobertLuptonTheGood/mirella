@@ -204,7 +204,7 @@ alloc_ss()
    ssorig = (Void *)malloc(SSSIZE);
    if(!ssorig) erret("\nCannot allocate string stack space");
    str_stk = ssorig + 12;  /*  why ???  */
-   printf("\nSSIZE=%d  SSNSTRING=%d str_stk=%u\n",SSSIZE,SSNSTRING,(unsigned int)str_stk);
+   printf("\nSSIZE=%d  SSNSTRING=%d str_stk=%lu\n",SSSIZE,SSNSTRING,(unsigned long)str_stk);
 }
 
 /************************ SSINIT() ***************************************/
@@ -1211,7 +1211,7 @@ normal stopwatch()   /* startwatch() resets it; returns ms since reset */
     return ((time - t_start) & TLIM);
 }
 
-int
+normal
 _fgets(buf,n,fp)
 char *buf;
 int n;
@@ -1226,7 +1226,7 @@ FILE *fp;
         if(c == '\n' || c == EOF)break;
     }
     *cp++ = '\0';
-    return( c == EOF ? 0 : (int)buf);
+    return( c == EOF ? 0 : (normal)buf);
 }
 
 

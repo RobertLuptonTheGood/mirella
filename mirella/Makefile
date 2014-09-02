@@ -38,7 +38,8 @@ DICTFILE = mirella.dic
 # CC = gcc -Wall -Wno-uninitialized
 # try optimization
 OPT ?= -O2
-CC = gcc -Wall -Wno-uninitialized -Wno-unused-result -fno-strict-aliasing $(OPT)
+CC = gcc --std=c99 $(OPT) -D_XOPEN_SOURCE
+CC += -Wall -Wno-uninitialized -Wno-unused-result -fno-strict-aliasing
 CFLAGS = -DDOT_MIRELLA=\\".mirella\\"
 CFLAGS += -I$(X11_INCLUDE_DIR)
 LDFLAGS =  -L$(MIRELSRC) -lmirella $(LIBX11) -lm

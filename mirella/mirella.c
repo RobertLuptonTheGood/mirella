@@ -349,7 +349,22 @@ static struct {
 #define N_CLSET (sizeof(clset)/sizeof(clset[0]))
 
 /********************************************************************/
+#define NO_STRING_VIA_LONGJMP 1		/* true if you can't pass a (char *) through an int */
 
+void
+m_longjmp(jmp_buf env, char *val)
+{
+#if NO_STRING_VIA_LONGJMP
+   if (strlen(val) > 0) {
+      fprintf(stderr, "\n%s", val);
+   }
+   longjmp(env, 0);
+#else
+   longjmp(env, (int)(long)val);
+#endif
+}
+
+/*****************************************************************************/
 
 static int setdb=0;
 /*flag for making the initialization procedure verbose, so can localize
@@ -384,7 +399,7 @@ char **argv;
     fborigin = init_fbuf(); /* init file buffers */    
 
     if(setdb){
-       printf("\nhw mark before dic.alloc=%x",(int)sbrk(0)); fflush(stdout);
+       printf("\nhw mark before dic.alloc=%lx",(long)sbrk(0)); fflush(stdout);
     }
     aloc_dic(); /* allocate dictionary space & define pointers to user
                     area, dictionary, break, and application env. clear
@@ -412,7 +427,7 @@ char **argv;
  * Allow application code to call its first initialisation functions
  */
     if(setdb){
-       printf("\nhw mark before first init functions=%x",(int)sbrk(0));
+       printf("\nhw mark before first init functions=%lx",(long)sbrk(0));
        fflush(stdout);
     }
 
@@ -525,8 +540,6 @@ mirellam()
 	do_init3();
     }else{ 
     /* this is a longjmp return */
-#define NO_STRING_VIA_LONGJMP 1		/* true if you can't pass a (char *) through an int */
-
 #if NO_STRING_VIA_LONGJMP
         fixerror(no_msg);		/* we already printed the string */
 #else
@@ -647,7 +660,7 @@ void aloc_dic()     /* allocates the dictionary and user areas */
     *ap_env = (normal)((normal *)ap_env + 1);  
         /* first entry is pointer to next free */
     if(setdb){
-       printf("\nup_4th, end= %d %d",(int)up_4th,(int)end); fflush(stdout);
+       printf("\nup_4th, end= %ld %ld", (long)up_4th, (long)end); fflush(stdout);
     }
 }
 
@@ -702,7 +715,7 @@ init_dic()    /* normal dictionary initialization  */
     init_user();
     origin = dp_4th;
 
-    if(setdb){printf("\nINIT_DIC:origin=%d",(int)origin); fflush(stdout);}
+    if(setdb){printf("\nINIT_DIC:origin=%ld",(long)origin); fflush(stdout);}
     /* reserve space for an array of pointers to the cfa of prim headers */
     dp_4th += NEXT_PRIM;
 
@@ -764,7 +777,7 @@ init_dic()    /* normal dictionary initialization  */
         *dp_4th++ = (normal)dictb_4th;  /* marker word pushes break address */
     }
     if(setdb){
-       printf("\nINIT_DIC:dp_4th at end=%d",(int)dp_4th); fflush(stdout);
+       printf("\nINIT_DIC:dp_4th at end=%ld",(long)dp_4th); fflush(stdout);
     }
 }
 
@@ -1817,7 +1830,7 @@ int sig;
         /* if outer interpreter has not been started, out */
         if( m_errexit ) exit(1);                                    
         /* if interrupt user flg is on, return to outer interpreter */        
-        if(V_INTERFLG) longjmp(env_4th,(int)"\n^C");  
+        if(V_INTERFLG) m_longjmp(env_4th, "\n^C");  
         /* otherwise just go your merry way with interrupt incremented */
         else{
             if(interrupt == 1){
@@ -1836,7 +1849,7 @@ error("\n  or wait for the code to handle the interrupt gracefully (n) ?"  );
          * under Linux...so back to getchar() 
          */
             if((c= getchar()) == 'y' || c=='Y'){
-                longjmp(env_4th,(int)"\nI refuse to be responsible for this");
+	       m_longjmp(env_4th, "\nI refuse to be responsible for this");
             }
         }
 #ifdef SIGDEBUG
@@ -1879,7 +1892,7 @@ error("\n  or wait for the code to handle the interrupt gracefully (n) ?"  );
     if ( (insane++)/4 || m_errexit ) {
         exit(1);
     }else{
-        longjmp(env_4th,(int)errcp);
+        m_longjmp(env_4th, errcp);
     }
 }
 
@@ -1907,8 +1920,8 @@ void setsigint()
     hdl_ret = (void *)signal(SIGINT,(void (*)())hdl_sig);
     if( hdl_ret != (void *)hdl_sig ){
          printf(
-        "SIGINT handler:handler=%u,hdl_sig=%u,SIG_DFL=%u\n",
-        (unsigned)hdl_ret,(unsigned)hdl_sig,(unsigned)SIG_DFL);
+        "SIGINT handler:handler=%lu,hdl_sig=%lu,SIG_DFL=%lu\n",
+        (unsigned long)hdl_ret,(unsigned long)hdl_sig,(unsigned long)SIG_DFL);
     }
 #endif /*SIGACTION*/
 #else  /*SIGNALS*/
@@ -2045,12 +2058,7 @@ char *arg;
       if(arg == (char *)NULL) {
 	 arg = no_msg;			/* NULL means the call to setjmp */
       }
-#if NO_STRING_VIA_LONGJMP
-      if (strlen(arg) > 0) {
-	 fprintf(stderr, "\n%s", arg);
-      }
-#endif
-      longjmp(env_4th,(int)arg);
+      m_longjmp(env_4th, arg);
    }
 }
 
@@ -2097,14 +2105,14 @@ int s;
         *ap_env = (normal)(ap_ptr - size);   /* ditto re #def */ 
                 /* if too big, reset and exit */
         scrprintf(
-            "\nApplication environment full, ptr = 0x%x, ceiling = 0x%x",
-            (int)ap_ptr,(int)(ap_ptr + APP_AREA)); fflush(stderr);
+            "\nApplication environment full, ptr = 0x%lx, ceiling = 0x%lx",
+            (long)ap_ptr,(long)(ap_ptr + APP_AREA)); fflush(stderr);
         erret((char *)NULL);
     }
     if(ap_ptr < ap_env + 1){      /* aaarrgh */
         scrprintf(
-        "\nApplication env pointer corrupted, ptr=%x, range 0x%x - 0x%x",
-            (int)ap_ptr,(int)(ap_env + 1),(int)(ap_env + APP_AREA));
+        "\nApplication env pointer corrupted, ptr=%lx, range 0x%lx - 0x%lx",
+            (long)ap_ptr,(long)(ap_env + 1),(long)(ap_env + APP_AREA));
         fflush(stderr);
         erret((char *)NULL);
     }

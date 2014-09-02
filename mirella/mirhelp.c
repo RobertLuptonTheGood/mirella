@@ -1275,7 +1275,7 @@ void makeindex()
     char * cp3;
 #endif
     int c;
-    int fnp;
+    normal fnp;
     FILE *hfp;
     char buffer[82];
     char catbuf[20];
@@ -1324,7 +1324,7 @@ void makeindex()
     /* read helpfiles names from list */
     do{
     	hfname[0] = '\0';
-        fnp=(int)fgets(hfname,30,lfp);      /* get filename */
+        fnp=(normal)fgets(hfname,30,lfp);      /* get filename */
 
         cf = hfname-1;
         while((c = *++cf) != '\0' && c != '\n' && c != '\r')
@@ -1558,7 +1558,7 @@ void m_fixhelp()     /* Mirella procedure; expands tabs in help files */
 {
     char *name, inbuf[100], outbuf[100];
     FILE *infp, *outfp;
-    int error, werror;
+    normal error, werror;
 
     name = cspop;
     if((infp = fopena(name,"r")) == NULL) {
@@ -1571,10 +1571,10 @@ void m_fixhelp()     /* Mirella procedure; expands tabs in help files */
         erret((char *)NULL);
     }
     do{
-        error = (int)fgets(inbuf,81,infp);
+        error = (normal)fgets(inbuf,81,infp);
         if(error == 0 && inbuf[0] == 0) break;
         tascii(inbuf,outbuf);
-        werror = (int)fputs(outbuf,outfp);
+        werror = (normal)fputs(outbuf,outfp);
         if(werror == -1){
             fclose(outfp);
             fclose(infp);

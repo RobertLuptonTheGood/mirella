@@ -383,8 +383,8 @@ int bitscol;  /* NB!! this is used to set bitpix and hence storage, 0=nomap */
         mgraph = *mp;        
 
 /*debug*/ printf(
-    "\nsetting up graph %d, size %dx%d bytes, xs=%d pointer %u  %d bits",
-                    n,ys,xsb,xs,(unsigned)mp,bitscol); fflush(stdout);       
+    "\nsetting up graph %d, size %dx%d bytes, xs=%d pointer %lu  %d bits",
+                    n,ys,xsb,xs,(unsigned long)mp,bitscol); fflush(stdout);       
 
         g_env[n].gptr = gpointer = mgraph[0];        
 

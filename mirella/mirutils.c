@@ -120,7 +120,7 @@ forth_printf()
       }
    }
    ptr = spush(ss(str,ffmt));		/* push string on str stack and */
-   push((int)ptr);			/* address on parameter stack */
+   push((normal)ptr);			/* address on parameter stack */
 }
 
 static char *

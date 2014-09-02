@@ -213,6 +213,7 @@ void
 gpballoc(xsz,ysz,nbuf,dsize)
 int xsz,ysz;
 int nbuf;
+int dsize;
 {
    int i;
    unsigned long porig;
@@ -674,6 +675,7 @@ int d;
 
 mirella void
 spdest(d)              /* destination is short array jeg9402 */
+int d;
 {
     gpdest(d,2);
     pbufs[d]->_header._bitpix = 16;    
@@ -681,6 +683,7 @@ spdest(d)              /* destination is short array jeg9402 */
 
 mirella void
 npdest(d)              /* destination is normal array jeg9803 */
+int d;
 {
     gpdest(d,4);
     pbufs[d]->_header._bitpix = 32;    
@@ -688,6 +691,7 @@ npdest(d)              /* destination is normal array jeg9803 */
 
 mirella void
 fpdest(d)              /* destination is float array jeg9803 */
+int d;
 {
     gpdest(d,-4);
     pbufs[d]->_header._bitpix = -32;    
@@ -695,6 +699,7 @@ fpdest(d)              /* destination is float array jeg9803 */
 
 mirella void            /* destination buffer is rgb triple */
 rgbpdest(d)
+int d;
 {
     gpdest(d,6);
     pbufs[d]->_header._bitpix = 24;
@@ -746,6 +751,7 @@ selqdest(d)     /* simply selects buffer d as the one referred to
                         template of some sort for another buffer
                         this routine is identical to seldest() but does
                         no checking */
+int d;
 {
     pbufd = pbufs[d];
     pbufferd = d;

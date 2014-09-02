@@ -131,7 +131,7 @@ double spft P_ARGS(( double z, float *x, float *y, float *k, int n, float *pd, i
 double spline P_ARGS(( double z, float *x, float *y, float *k, int n ));
 float **mtick P_ARGS(( normal *cfa ));
 int _STOPW P_ARGS(( int f ));
-int _fgets P_ARGS(( char *buf, int n, FILE *fp ));
+normal _fgets P_ARGS(( char *buf, int n, FILE *fp ));
 int _mcompare P_ARGS(( Const Void *p1, Const Void *p2 ));
 int _yesno P_ARGS(( void ));
 int app_keypd P_ARGS(( void ));

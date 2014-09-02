@@ -55,9 +55,9 @@ int siz;
             bufcpy(chkptr,start,siz);
             sstart = start;
             ssiz = siz;
-            mprintf("\nMEMCHK:chk buf at %xh(%u), chk reg %d by at %x(%d)",
-                (unsigned int)chkptr,(unsigned int)chkptr,siz,
-                (unsigned int)sstart,(unsigned int)sstart);
+            mprintf("\nMEMCHK:chk buf at %lxh(%lu), chk reg %d by at %lx(%ld)",
+                (unsigned normal)chkptr,(unsigned normal)chkptr,siz,
+                (unsigned normal)sstart,(unsigned normal)sstart);
         }
         flushit();
     }
@@ -68,10 +68,10 @@ int siz;
         if(*cp1++ != *cp++){
             diff++;
             if(diff < 5)mprintf(
-                "\n/MEMCHK:diff at %8x : old=%2x new=%2x, chk,r,s = %x %x %d",
-                (unsigned int)(sstart+i),(unsigned int)chkptr[i],
-                (unsigned int)sstart[i],(unsigned int)chkptr,
-                (unsigned int)sstart,ssiz);
+                "\n/MEMCHK:diff at %8lx : old=%2lx new=%2lx, chk,r,s = %lx %lx %d",
+                (unsigned long)(sstart+i),(unsigned long)chkptr[i],
+                (unsigned long)sstart[i],(unsigned long)chkptr,
+                (unsigned long)sstart,ssiz);
             flushit();                
         }
     }

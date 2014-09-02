@@ -319,7 +319,7 @@ void init_mem() /* attempts to reopen any channels open in dictionary image */
             ret = (char *)malloc(mp->mlength);
             mp->mpointer = ret;
             if(ret){
-                sprintf(out_string,"  pointer %d",(int)ret);
+                sprintf(out_string,"  pointer %ld",(long)ret);
                 cprint(out_string);
                 if((nrows = mp->msiz1) != 0){
                     ncols = (mp->mlength - nrows*sizeof(char *))/
@@ -620,9 +620,9 @@ Void *v_mch;
 {
     mem_t *mch = (mem_t *)v_mch;
 
-    if((unsigned)mch < nmchan){  /* probably a channel number */
-        if((memorig+(unsigned)mch)->mpointer == 0){
-            fprintf(stderr,"Memchannel %d not open",(unsigned)mch); 
+    if((unsigned normal)mch < nmchan){  /* probably a channel number */
+        if((memorig+(unsigned normal)mch)->mpointer == 0){
+            fprintf(stderr,"Memchannel %lu not open",(unsigned long)mch); 
             fflush(stderr);
             return 0;
         }else mch = (memorig+(normal)mch);
